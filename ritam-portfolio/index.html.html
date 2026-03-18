@@ -1,0 +1,3692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RITAM PANDEY — Robotics Research Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@100;300;400;600;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #020408;
+  --deep-blue: #050d1a;
+  --mid-blue: #071528;
+  --cyan: #00e5ff;
+  --cyan-dim: #00b8cc;
+  --cyan-glow: rgba(0,229,255,0.15);
+  --green: #00ff88;
+  --green-dim: #00cc6a;
+  --green-glow: rgba(0,255,136,0.12);
+  --amber: #ffaa00;
+  --red: #ff3355;
+  --text: #c8dde8;
+  --text-dim: #5a7a8a;
+  --text-bright: #eaf4fa;
+  --border: rgba(0,229,255,0.18);
+  --border-green: rgba(0,255,136,0.18);
+  --card-bg: rgba(5,18,35,0.85);
+  --font-mono: 'Share Tech Mono', monospace;
+  --font-body: 'Exo 2', sans-serif;
+  --font-display: 'Orbitron', sans-serif;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--text);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+}
+
+/* Custom cursor only on pointer devices */
+@media (hover: hover) and (pointer: fine) {
+  body { cursor: none; }
+}
+
+/* CUSTOM CURSOR */
+.cursor {
+  position: fixed;
+  width: 12px; height: 12px;
+  background: var(--cyan);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: transform 0.05s;
+  box-shadow: 0 0 12px var(--cyan), 0 0 24px var(--cyan);
+  mix-blend-mode: screen;
+}
+.cursor-ring {
+  position: fixed;
+  width: 36px; height: 36px;
+  border: 1px solid var(--cyan);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: transform 0.12s ease, width 0.2s, height 0.2s, opacity 0.2s;
+  opacity: 0.5;
+}
+body:hover .cursor-ring { opacity:1; }
+
+/* SCANLINE OVERLAY */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px);
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* CANVAS BG */
+#bgCanvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.6;
+}
+
+/* NOISE TEXTURE */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.5;
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 500;
+  padding: 0 2rem;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(2,4,8,0.85);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+}
+.nav-logo {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  color: var(--cyan);
+  text-transform: uppercase;
+}
+.nav-logo span { color: var(--green); }
+.nav-links {
+  display: flex;
+  gap: 1.8rem;
+  list-style: none;
+}
+.nav-links a {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.2s;
+  position: relative;
+}
+.nav-links a::before {
+  content: '>';
+  margin-right: 4px;
+  color: var(--cyan);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.nav-links a:hover { color: var(--cyan); }
+.nav-links a:hover::before { opacity: 1; }
+.nav-status {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.nav-status::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+/* SECTIONS */
+section {
+  position: relative;
+  z-index: 2;
+}
+
+/* ===== HERO ===== */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 2rem 5rem;
+  position: relative;
+  overflow: hidden;
+  z-index: 2;
+  isolation: isolate;
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridDrift 30s linear infinite;
+  opacity: 0.3;
+}
+@keyframes gridDrift {
+  0% { background-position: 0 0; }
+  100% { background-position: 60px 60px; }
+}
+
+.hero-corner {
+  position: absolute;
+  width: 100px; height: 100px;
+  border-color: var(--cyan);
+  border-style: solid;
+  opacity: 0.4;
+}
+.hero-corner.tl { top:80px; left:2rem; border-width: 2px 0 0 2px; }
+.hero-corner.tr { top:80px; right:2rem; border-width: 2px 2px 0 0; }
+.hero-corner.bl { bottom:2rem; left:2rem; border-width: 0 0 2px 2px; }
+.hero-corner.br { bottom:2rem; right:2rem; border-width: 0 2px 2px 0; }
+
+.hero-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.4em;
+  color: var(--cyan);
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.3s forwards;
+}
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 10vw, 8rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: var(--text-bright);
+  opacity: 0;
+  animation: fadeUp 0.8s 0.5s forwards;
+  text-shadow: 0 0 60px rgba(0,229,255,0.3);
+}
+.hero-title span {
+  color: var(--cyan);
+  display: block;
+}
+.hero-subtitle {
+  font-family: var(--font-body);
+  font-size: clamp(0.8rem, 2vw, 1.1rem);
+  font-weight: 300;
+  letter-spacing: 0.4em;
+  color: var(--text-dim);
+  margin-top: 1.2rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.7s forwards;
+  text-transform: uppercase;
+}
+.hero-tagline {
+  font-family: var(--font-body);
+  font-size: clamp(0.9rem, 2vw, 1.15rem);
+  font-weight: 300;
+  color: var(--text);
+  max-width: 520px;
+  margin: 1rem auto 0;
+  line-height: 1.7;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.9s forwards;
+  position: relative;
+  z-index: 3;
+}
+.hero-tagline em {
+  color: #00ff88 !important;
+  font-style: normal;
+  position: relative;
+  z-index: 4;
+  -webkit-text-fill-color: #00ff88;
+}
+
+.hero-btns {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 0;
+  margin-bottom: 0;
+  opacity: 0;
+  animation: fadeUp 0.8s 1.1s forwards;
+}
+
+/* Actions wrapper: stacks btns above stats in normal flow */
+.hero-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-top: 1.6rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 1.1s forwards;
+  width: 100%;
+}
+/* Override child animations — parent handles the reveal */
+.hero-actions .hero-btns,
+.hero-actions .hero-stats {
+  opacity: 1;
+  animation: none;
+}
+
+.hero-stats {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 6rem;
+  margin-top: 1.8rem;
+  position: static;
+  width: 100%;
+}
+.hero-stat {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.hero-stat-num {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--cyan);
+  line-height: 1;
+  display: block;
+}
+.hero-stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-top: 7px;
+  display: block;
+  white-space: nowrap;
+}
+.btn {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.7rem 1.8rem;
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+  background: transparent;
+  text-decoration: none;
+  cursor: none;
+  position: relative;
+  overflow: hidden;
+  /* No isolation — let color inherit normally */
+}
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--cyan);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 1;
+}
+.btn span {
+  position: relative;
+  z-index: 2;
+  color: inherit;
+  transition: color 0.3s;
+  display: inline-block;
+}
+/* Cyan button hover — black text on cyan fill */
+.btn:hover { color: var(--black); }
+.btn:hover::before { transform: translateX(0); }
+.btn:hover span { color: var(--black); }
+
+/* Green button */
+.btn.green {
+  border-color: var(--green);
+  color: var(--green);
+}
+.btn.green::before { background: var(--green); }
+/* Green button hover — black text on green fill, !important to override inheritance */
+.btn.green:hover span { color: var(--black) !important; }
+.btn.green:hover { color: var(--black); }
+
+
+.scroll-hint {
+  position: absolute;
+  bottom: 1.2rem;
+  right: 2rem;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  writing-mode: vertical-rl;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  animation: fadeUp 1s 1.6s forwards;
+}
+.scroll-hint::after {
+  content: '';
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--cyan), transparent);
+  animation: scrollLine 2s ease-in-out infinite;
+}
+@keyframes scrollLine {
+  0% { transform: scaleY(0); transform-origin: top; }
+  50% { transform: scaleY(1); transform-origin: top; }
+  51% { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(20px); }
+  to { opacity:1; transform: translateY(0); }
+}
+
+/* ===== SECTION COMMON ===== */
+.section-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 6rem 2rem;
+}
+.section-header {
+  margin-bottom: 3.5rem;
+}
+.section-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.4em;
+  color: var(--cyan);
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+}
+.section-eyebrow.green { color: var(--green); }
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 700;
+  color: var(--text-bright);
+  line-height: 1.1;
+}
+.section-line {
+  width: 60px;
+  height: 2px;
+  background: var(--cyan);
+  margin-top: 1rem;
+}
+.section-line.green { background: var(--green); }
+
+/* DIVIDER */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: 0 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+/* ===== ABOUT ===== */
+#about { background: var(--deep-blue); }
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+@media(max-width:768px){ .about-grid { grid-template-columns:1fr; } }
+.about-text p {
+  font-size: 1rem;
+  line-height: 1.85;
+  color: var(--text);
+  margin-bottom: 1.2rem;
+  font-weight: 300;
+}
+.about-text strong { color: var(--cyan); font-weight: 600; }
+.about-specs {
+  display: grid;
+  gap: 1rem;
+}
+.spec-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  position: relative;
+  overflow: hidden;
+}
+.spec-row::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--cyan);
+}
+.spec-row.green-accent::before { background: var(--green); }
+.spec-key {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  min-width: 110px;
+}
+.spec-val {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--text-bright);
+  font-weight: 400;
+}
+
+/* ===== PATENTS / SYSTEMS ===== */
+#patents { background: var(--black); }
+.patents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+.patent-card {
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  padding: 1.8rem;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s, transform 0.3s;
+  cursor: none;
+}
+.patent-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--cyan-glow), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.patent-card:hover {
+  border-color: var(--cyan);
+  transform: translateY(-4px);
+}
+.patent-card:hover::before { opacity: 1; }
+.patent-card.green-card { border-color: var(--border-green); }
+.patent-card.green-card::before { background: linear-gradient(135deg, var(--green-glow), transparent 60%); }
+.patent-card.green-card:hover { border-color: var(--green); }
+
+.patent-corner {
+  position: absolute;
+  top: 0; right: 0;
+  width: 0; height: 0;
+  border-style: solid;
+  border-width: 0 40px 40px 0;
+  border-color: transparent var(--cyan) transparent transparent;
+  opacity: 0.5;
+}
+.patent-card.green-card .patent-corner { border-color: transparent var(--green) transparent transparent; }
+
+.patent-status {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  color: var(--green);
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.patent-status::before {
+  content: '';
+  width: 5px; height: 5px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+.patent-code {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--cyan);
+  letter-spacing: 0.05em;
+  line-height: 1;
+}
+.patent-card.green-card .patent-code { color: var(--green); }
+.patent-name {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  font-weight: 300;
+  margin-bottom: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.patent-section-label {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+.patent-text {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  line-height: 1.65;
+  color: var(--text);
+  font-weight: 300;
+  margin-bottom: 1rem;
+}
+.patent-footer {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.patent-tag {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+.patent-year {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--cyan);
+  margin-left: auto;
+}
+.patent-card.green-card .patent-year { color: var(--green); }
+
+/* ===== ROBOTICS LAB ===== */
+#robotics { background: var(--deep-blue); }
+.robotics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  align-items: stretch;
+}
+@media(max-width:960px){ .robotics-grid { grid-template-columns: repeat(2, 1fr); } }
+@media(max-width:600px){ .robotics-grid { grid-template-columns: 1fr; } }
+.project-card {
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  overflow: hidden;
+  position: relative;
+  transition: border-color 0.3s;
+  cursor: none;
+  display: flex;
+  flex-direction: column;
+}
+.project-card:hover { border-color: var(--cyan); }
+.project-info {
+  padding: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.project-info .card-hint {
+  margin-top: auto;
+  padding-top: 1rem;
+}
+.project-card {
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  overflow: hidden;
+  position: relative;
+  transition: border-color 0.3s;
+  cursor: none;
+}
+.project-card:hover { border-color: var(--cyan); }
+.project-visual {
+  height: 180px;
+  background: var(--mid-blue);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.project-visual svg { opacity: 0.7; }
+.project-visual-label {
+  position: absolute;
+  bottom: 8px; right: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+}
+.project-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-bottom: 0.4rem;
+}
+.project-desc {
+  font-size: 0.82rem;
+  color: var(--text);
+  line-height: 1.6;
+  font-weight: 300;
+}
+.ptag {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  padding: 3px 8px;
+  background: var(--cyan-glow);
+  border: 1px solid var(--border);
+  color: var(--cyan);
+  text-transform: uppercase;
+}
+
+/* ===== COMMS SECTION ===== */
+#comms { background: var(--black); }
+.comms-visual {
+  height: 320px;
+  position: relative;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  margin-bottom: 3rem;
+  overflow: hidden;
+}
+.comms-canvas { width: 100%; height: 100%; }
+.comms-label {
+  position: absolute;
+  top: 1rem; left: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--cyan);
+  text-transform: uppercase;
+}
+.comms-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+@media(max-width:768px){ .comms-cards { grid-template-columns:1fr; } }
+.comms-card {
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  padding: 1.5rem;
+  position: relative;
+}
+.comms-card-icon {
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  color: var(--cyan);
+  margin-bottom: 0.8rem;
+  text-transform: uppercase;
+}
+.comms-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-bottom: 0.6rem;
+}
+.comms-card p {
+  font-size: 0.82rem;
+  line-height: 1.65;
+  color: var(--text);
+  font-weight: 300;
+}
+
+/* ===== EMBEDDED ===== */
+#embedded { background: var(--deep-blue); }
+.embedded-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+@media(max-width:768px){ .embedded-grid { grid-template-columns:1fr; } }
+
+/* Left column sticks — header + animation travel together */
+.embedded-left {
+  position: sticky;
+  top: 72px;
+  align-self: start;
+}
+/* Disable sticky on mobile */
+@media(max-width:768px){
+  .embedded-left { position: relative; top: auto; }
+}
+
+.circuit-visual {
+  border: 1px solid var(--border-green);
+  background: var(--card-bg);
+  height: 340px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  margin-top: 1.5rem;
+}
+.circuit-visual canvas { width: 100%; height: 100%; }
+.embedded-projects { display: grid; gap: 1rem; }
+.ep-item {
+  border: 1px solid var(--border);
+  padding: 1.1rem 1.3rem;
+  background: var(--card-bg);
+  position: relative;
+  transition: border-color 0.3s;
+  cursor: none;
+}
+.ep-item:hover { border-color: var(--green); }
+.ep-item::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--green);
+}
+.ep-title {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-bottom: 0.3rem;
+}
+.ep-desc {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  font-weight: 300;
+  line-height: 1.5;
+}
+.ep-domain {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  color: var(--green);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-top: 0.5rem;
+}
+
+/* ===== VLSI ===== */
+#vlsi { background: var(--black); }
+.vlsi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+@media(max-width:768px){ .vlsi-grid { grid-template-columns:1fr; } }
+.vlsi-visual {
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  padding: 1.5rem;
+  position: relative;
+}
+.vlsi-visual canvas { width: 100%; }
+.vlsi-title {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--amber);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.waveform-container {
+  border: 1px solid var(--border);
+  background: rgba(2,4,8,0.9);
+  padding: 1rem;
+  position: relative;
+}
+.waveform-label {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  color: var(--amber);
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+}
+.waveform-row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+.waveform-id {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  min-width: 20px;
+}
+.waveform-line {
+  flex: 1;
+  height: 24px;
+  position: relative;
+}
+.waveform-line svg { width: 100%; height: 100%; }
+
+/* ===== RESEARCH ===== */
+#research { background: var(--deep-blue); }
+.research-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+@media(max-width:768px){ .research-grid { grid-template-columns:1fr; } }
+.research-card {
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  cursor: none;
+  transition: border-color 0.3s;
+}
+.research-card:hover { border-color: var(--cyan); }
+.research-card-icon {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.3em;
+  color: var(--cyan);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.research-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-bottom: 1rem;
+  line-height: 1.3;
+}
+.research-card p {
+  font-size: 0.82rem;
+  line-height: 1.7;
+  color: var(--text);
+  font-weight: 300;
+}
+
+/* ===== ACHIEVEMENTS ===== */
+#achievements { background: var(--black); }
+.ach-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+.ach-card {
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  padding: 1.8rem;
+  position: relative;
+  overflow: hidden;
+  cursor: none;
+  transition: all 0.3s;
+}
+.ach-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(255,170,0,0.06), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.ach-card:hover { border-color: var(--amber); }
+.ach-card:hover::after { opacity: 1; }
+.ach-rank {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--amber);
+  opacity: 0.3;
+  position: absolute;
+  top: 1rem; right: 1.2rem;
+  line-height: 1;
+}
+.ach-icon {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.3em;
+  color: var(--amber);
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+}
+.ach-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-bottom: 0.4rem;
+  line-height: 1.3;
+}
+.ach-desc {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+  font-weight: 300;
+}
+
+/* ===== CONTACT ===== */
+#contact { background: var(--deep-blue); }
+.contact-console {
+  border: 1px solid var(--border);
+  background: rgba(2,4,8,0.9);
+  padding: 2.5rem;
+  max-width: 700px;
+  margin: 0 auto;
+  position: relative;
+}
+.console-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.console-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+}
+.console-dot:nth-child(1) { background: var(--red); }
+.console-dot:nth-child(2) { background: var(--amber); }
+.console-dot:nth-child(3) { background: var(--green); }
+.console-title {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  margin-left: 8px;
+}
+.console-line {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 2;
+  color: var(--text);
+}
+.console-line .prompt { color: var(--green); margin-right: 8px; }
+.console-line a {
+  color: var(--cyan);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  transition: color 0.2s, border-color 0.2s;
+}
+.console-line a:hover { color: var(--text-bright); border-color: var(--cyan); }
+.console-message {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--border-green);
+  background: var(--green-glow);
+}
+.console-message p {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--green);
+  font-weight: 300;
+  font-style: italic;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  position: relative;
+  z-index: 2;
+  border-top: 1px solid var(--border);
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--black);
+}
+.footer-brand {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+.footer-copy {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+}
+.footer-status {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  color: var(--green);
+  letter-spacing: 0.15em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.footer-status::before {
+  content: '';
+  width: 5px; height: 5px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,100% { opacity:1; box-shadow: 0 0 6px currentColor; }
+  50% { opacity:0.4; box-shadow: none; }
+}
+
+/* SCROLL REVEAL */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* On touch/mobile devices — skip reveal animation, show all content immediately */
+@media (hover: none), (max-width: 600px) {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* Restore auto cursor on all elements for touch/mobile */
+@media (hover: none) {
+  * { cursor: auto !important; }
+  .cursor, .cursor-ring { display: none !important; }
+}
+
+/* PROGRESS INDICATOR */
+.progress-bar {
+  position: fixed;
+  top: 56px; left: 0;
+  height: 2px;
+  background: var(--cyan);
+  z-index: 499;
+  transition: width 0.1s;
+  box-shadow: 0 0 8px var(--cyan);
+}
+
+
+/* ── EFFECTS TOGGLE BUTTON ── */
+#toggle-effects {
+  position: fixed;
+  bottom: 1.4rem;
+  right: 1.4rem;
+  z-index: 600;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  background: rgba(2,4,8,0.85);
+  border: 1px solid var(--border);
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  backdrop-filter: blur(8px);
+}
+#toggle-effects:hover { color: var(--cyan); border-color: var(--cyan); }
+
+/* Effects-disabled state */
+.effects-disabled * { cursor: auto !important; }
+.effects-disabled #cursor,
+.effects-disabled #cursorRing { display: none !important; }
+
+/* ── HAMBURGER BUTTON ── */
+#nav-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 36px; height: 36px;
+  background: none;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  padding: 6px;
+  transition: border-color 0.2s;
+  flex-shrink: 0;
+}
+#nav-hamburger:hover { border-color: var(--cyan); }
+#nav-hamburger .bar {
+  display: block;
+  width: 18px; height: 1.5px;
+  background: var(--text-dim);
+  transition: transform 0.3s ease, opacity 0.3s ease, background 0.2s;
+  transform-origin: center;
+}
+#nav-hamburger:hover .bar { background: var(--cyan); }
+/* Open state — bars form X */
+#nav-hamburger.is-open .bar:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+#nav-hamburger.is-open .bar:nth-child(2) { opacity: 0; transform: scaleX(0); }
+#nav-hamburger.is-open .bar:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* ── MOBILE DRAWER ── */
+#mobile-menu {
+  display: none;
+  position: fixed;
+  top: 56px; left: 0; right: 0;
+  background: rgba(2,4,8,0.97);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(16px);
+  z-index: 490;
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease, padding 0.35s ease;
+}
+#mobile-menu.is-open {
+  max-height: 600px;
+  padding: 1rem 0 1.5rem;
+}
+#mobile-menu ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+#mobile-menu ul li a {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  text-decoration: none;
+  text-transform: uppercase;
+  padding: 0.9rem 2rem;
+  border-bottom: 1px solid rgba(0,229,255,0.06);
+  transition: color 0.2s, background 0.2s, padding-left 0.2s;
+}
+#mobile-menu ul li a:hover {
+  color: var(--cyan);
+  background: rgba(0,229,255,0.04);
+  padding-left: 2.5rem;
+}
+#mobile-menu ul li a::before {
+  content: '> ';
+  color: var(--cyan);
+  opacity: 0.5;
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  .nav-links { display: none; }
+  #nav-hamburger { display: flex; }
+  #mobile-menu { display: block; }
+  .hero-stats { gap: 2rem; }
+  footer { flex-direction: column; gap: 1rem; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="progress-bar" id="progressBar"></div>
+<button id="toggle-effects" aria-label="Toggle visual effects">Disable Effects</button>
+
+<canvas id="bgCanvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">RITAM<span>.</span>LAB</div>
+  <ul class="nav-links">
+    <li><a href="#about">Profile</a></li>
+    <li><a href="#patents">Systems</a></li>
+    <li><a href="#robotics">Robotics</a></li>
+    <li><a href="#comms">Networks</a></li>
+    <li><a href="#embedded">Embedded</a></li>
+    <li><a href="#vlsi">VLSI</a></li>
+    <li><a href="#research">Research</a></li>
+    <li><a href="#contact">Connect</a></li>
+  </ul>
+  <div style="display:flex;align-items:center;gap:0.8rem;">
+    <div class="nav-status">SYSTEMS ONLINE <span style="font-size:1.2em;opacity:0.85;margin-left:4px;color:var(--green);font-family:serif;vertical-align:middle;">ॐ</span></div>
+    <button id="nav-hamburger" aria-label="Open menu" aria-expanded="false">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU DRAWER -->
+<div id="mobile-menu" aria-hidden="true">
+  <ul>
+    <li><a href="#about">Profile</a></li>
+    <li><a href="#patents">Systems</a></li>
+    <li><a href="#robotics">Robotics</a></li>
+    <li><a href="#comms">Networks</a></li>
+    <li><a href="#embedded">Embedded</a></li>
+    <li><a href="#vlsi">VLSI</a></li>
+    <li><a href="#research">Research</a></li>
+    <li><a href="#contact">Connect</a></li>
+  </ul>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-corner tl"></div>
+  <div class="hero-corner tr"></div>
+  <div class="hero-corner bl"></div>
+  <div class="hero-corner br"></div>
+
+  <div class="hero-label">// ROBOTICS RESEARCH LABORATORY — NODE 001</div>
+  <h1 class="hero-title">RITAM<span>PANDEY</span></h1>
+  <div class="hero-subtitle">Robotics &nbsp;•&nbsp; Embedded Systems &nbsp;•&nbsp; Distributed Architectures &nbsp;•&nbsp; VLSI</div>
+  <p class="hero-tagline">Designing <em>Intelligent Machines</em> and <em>Resilient Communication Systems</em> at the intersection of hardware, software, and protocol.</p>
+  <div class="hero-actions">
+    <div class="hero-btns">
+      <a href="#patents" class="btn"><span>Enter Lab</span></a>
+      <a href="#patents" class="btn"><span>View Systems</span></a>
+      <a href="#research" class="btn green"><span>Research Work</span></a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num" id="patentCounter">0</div>
+        <div class="hero-stat-label">Patents Filed</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">4+</div>
+        <div class="hero-stat-label">Core Domains</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">2025</div>
+        <div class="hero-stat-label">Active Research</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">SCROLL TO EXPLORE</div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-eyebrow">// ENGINEER PROFILE</div>
+      <h2 class="section-title">Research Identity</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>
+          <strong>Ritam Pandey</strong> is an Electronics and Communication Engineering student operating at the frontier of hardware intelligence — designing systems that think, move, communicate, and adapt.
+        </p>
+        <p>
+          His work spans <strong>autonomous robotic platforms</strong> built for cross-domain deployment, <strong>modular embedded hardware</strong> architectures that reconfigure on demand, and <strong>decentralized communication frameworks</strong> engineered to function without infrastructure.
+        </p>
+        <p>
+          Each patented system represents a solution to a fundamental engineering challenge — from multi-terrain rovers to zero-trust mesh networks — built with the discipline of hardware design and the precision of protocol engineering.
+        </p>
+      </div>
+      <div class="about-specs reveal reveal-delay-2">
+        <div class="spec-row"><span class="spec-key">Status</span><span class="spec-val">Active Researcher · ECE Student</span></div>
+        <div class="spec-row green-accent"><span class="spec-key">Domain 01</span><span class="spec-val">Robotics & Autonomous Systems</span></div>
+        <div class="spec-row"><span class="spec-key">Domain 02</span><span class="spec-val">Distributed Communication Systems</span></div>
+        <div class="spec-row green-accent"><span class="spec-key">Domain 03</span><span class="spec-val">Embedded Systems Architecture</span></div>
+        <div class="spec-row"><span class="spec-key">Domain 04</span><span class="spec-val">VLSI & Hardware Design</span></div>
+        <div class="spec-row green-accent"><span class="spec-key">Patents</span><span class="spec-val">9 Filed · 2025–2026</span></div>
+        <div class="spec-row"><span class="spec-key">Mode</span><span class="spec-val">Open to Collaboration</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- PATENTS -->
+<section id="patents">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-eyebrow">// PATENTED SYSTEMS GALLERY</div>
+      <h2 class="section-title">Filed Inventions</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="patents-grid">
+
+      <!-- MORPH -->
+      <div class="patent-card reveal" data-patent="MORPH">
+        <div class="patent-corner"></div>
+        <div class="patent-status">Patent Filed · 2025</div>
+        <div class="patent-code">MORPH</div>
+        <div class="patent-name">Modular Multi-Application Rover</div>
+        <div class="patent-section-label">// PROBLEM</div>
+        <p class="patent-text">Robotic platforms are typically designed for a single specialized task, making cross-domain deployment difficult and requiring separate hardware systems for different operational environments.</p>
+        <div class="patent-section-label">// ENGINEERING SOLUTION</div>
+        <p class="patent-text">Modular AI-enabled autonomous rover platform with hot-swappable pogo-pin sensor modules and distributed microcontroller architecture enabling rapid multi-domain deployment.</p>
+        <div class="patent-footer">
+          <span class="patent-tag">Robotics</span>
+          <span class="patent-year">2025</span>
+        
+          <div class="card-hint">// CLICK TO KNOW MORE ›</div>
+        </div>
+      </div>
+
+      <!-- ZARVEX -->
+      <div class="patent-card reveal reveal-delay-1" data-patent="ZARVEX">
+        <div class="patent-corner"></div>
+        <div class="patent-status">Patent Filed · 2025</div>
+        <div class="patent-code">ZARVEX</div>
+        <div class="patent-name">Zero-Tilt Aerial Recon System</div>
+        <div class="patent-section-label">// PROBLEM</div>
+        <p class="patent-text">Conventional UAVs often rely on structural tilt or fixed rotor configurations for directional control, reducing observation stability and limiting precision during surveillance tasks.</p>
+        <div class="patent-section-label">// ENGINEERING SOLUTION</div>
+        <p class="patent-text">Zero-tilt UAV architecture using independently vectored propellers and AI-based IMU stabilization for high-precision aerial surveillance.</p>
+        <div class="patent-footer">
+          <span class="patent-tag">Autonomous UAV</span>
+          <span class="patent-year">2025</span>
+        
+          <div class="card-hint">// CLICK TO KNOW MORE ›</div>
+        </div>
+      </div>
+
+      <!-- PRANA -->
+      <div class="patent-card reveal reveal-delay-2" data-patent="PRANA">
+        <div class="patent-corner"></div>
+        <div class="patent-status">Patent Filed · 2025</div>
+        <div class="patent-code">PRANA</div>
+        <div class="patent-name">Precision Agriculture Rover</div>
+        <div class="patent-section-label">// PROBLEM</div>
+        <p class="patent-text">Most agricultural robotic systems are designed for single-purpose tasks, forcing farmers to deploy multiple machines to perform different field operations.</p>
+        <div class="patent-section-label">// ENGINEERING SOLUTION</div>
+        <p class="patent-text">AI-driven autonomous agriculture rover integrating adaptive spraying, hybrid weed control, and closed-loop soil analytics in a single platform.</p>
+        <div class="patent-footer">
+          <span class="patent-tag">Agricultural Robotics</span>
+          <span class="patent-year">2025</span>
+        
+          <div class="card-hint">// CLICK TO KNOW MORE ›</div>
+        </div>
+      </div>
+
+      <!-- CITADEL -->
+      <div class="patent-card green-card reveal" data-patent="CITADEL">
+        <div class="patent-corner"></div>
+        <div class="patent-status">Patent Filed · 2026</div>
+        <div class="patent-code">CITADEL</div>
+        <div class="patent-name">Emergency Communication Mesh System</div>
+        <div class="patent-section-label">// PROBLEM</div>
+        <p class="patent-text">Emergency communication in remote environments often fails due to unreliable connectivity, limited battery resources, and dependence on single communication channels.</p>
+        <div class="patent-section-label">// ENGINEERING SOLUTION</div>
+        <p class="patent-text">Wearable emergency communication platform with multi-bearer routing across LoRa, LTE-M, and BLE networks for resilient infrastructure-free operation.</p>
+        <div class="patent-footer">
+          <span class="patent-tag">Distributed Comms</span>
+          <span class="patent-year">2026</span>
+        
+          <div class="card-hint">// CLICK TO KNOW MORE ›</div>
+        </div>
+      </div>
+
+      <!-- UNIMOUNT -->
+      <div class="patent-card green-card reveal reveal-delay-1" data-patent="UNIMOUNT">
+        <div class="patent-corner"></div>
+        <div class="patent-status">Patent Filed · 2026</div>
+        <div class="patent-code">UNIMOUNT</div>
+        <div class="patent-name">Universal Intelligent Modular Hardware Platform</div>
+        <div class="patent-section-label">// PROBLEM</div>
+        <p class="patent-text">Most embedded systems are tightly coupled to a specific application, requiring full system replacement when operational requirements change.</p>
+        <div class="patent-section-label">// ENGINEERING SOLUTION</div>
+        <p class="patent-text">Universal embedded hardware platform enabling automatic application switching using passive hardware cartridges for adaptive deployment.</p>
+        <div class="patent-footer">
+          <span class="patent-tag">Embedded Systems</span>
+          <span class="patent-year">2026</span>
+        
+          <div class="card-hint">// CLICK TO KNOW MORE ›</div>
+        </div>
+      </div>
+
+      <!-- SLPA-ZT -->
+      <div class="patent-card green-card reveal reveal-delay-2" data-patent="SLPA-ZT">
+        <div class="patent-corner"></div>
+        <div class="patent-status">Patent Filed · 2026</div>
+        <div class="patent-code">SLPA-ZT</div>
+        <div class="patent-name">Self-Learning Priority-Aware Zero-Trust Mesh</div>
+        <div class="patent-section-label">// PROBLEM</div>
+        <p class="patent-text">Existing wireless mesh systems often struggle with reliability, energy efficiency, and secure communication in infrastructure-less environments.</p>
+        <div class="patent-section-label">// ENGINEERING SOLUTION</div>
+        <p class="patent-text">Self-learning zero-trust wireless mesh framework designed for reliable communication among energy-constrained devices without fixed infrastructure.</p>
+        <div class="patent-footer">
+          <span class="patent-tag">Communication Protocols</span>
+          <span class="patent-year">2026</span>
+        
+          <div class="card-hint">// CLICK TO KNOW MORE ›</div>
+        </div>
+      </div>
+
+      <!-- SIMA -->
+      <div class="patent-card reveal" data-patent="SIMA">
+        <div class="patent-corner"></div>
+        <div class="patent-status">Patent Filed · 2026</div>
+        <div class="patent-code">SIMA</div>
+        <div class="patent-name">State-Shifted Immutable Mesh Architecture</div>
+        <div class="patent-section-label">// PROBLEM</div>
+        <p class="patent-text">Traditional communication protocols modify data packets as they traverse networks, increasing complexity and reducing efficiency in heterogeneous communication environments.</p>
+        <div class="patent-section-label">// ENGINEERING SOLUTION</div>
+        <p class="patent-text">Wireless communication architecture enabling immutable packet propagation across heterogeneous networks for streamlined cross-system communication.</p>
+        <div class="patent-footer">
+          <span class="patent-tag">Network Architecture</span>
+          <span class="patent-year">2026</span>
+        
+          <div class="card-hint">// CLICK TO KNOW MORE ›</div>
+        </div>
+      </div>
+
+      <!-- AQUENTIS -->
+      <div class="patent-card reveal reveal-delay-1" data-patent="AQUENTIS">
+        <div class="patent-corner"></div>
+        <div class="patent-status">Patent Filed · 2026</div>
+        <div class="patent-code">AQUENTIS</div>
+        <div class="patent-name">Intelligent Water Dispensing System</div>
+        <div class="patent-section-label">// PROBLEM</div>
+        <p class="patent-text">Traditional water faucets regulate only flow and do not account for real-time water quality conditions during usage, leaving quality management to external systems.</p>
+        <div class="patent-section-label">// ENGINEERING SOLUTION</div>
+        <p class="patent-text">Smart faucet system integrating sensor-driven monitoring and adaptive flow control for intelligent real-time water quality management.</p>
+        <div class="patent-footer">
+          <span class="patent-tag">Smart Infrastructure</span>
+          <span class="patent-year">2026</span>
+        
+          <div class="card-hint">// CLICK TO KNOW MORE ›</div>
+        </div>
+      </div>
+      <!-- AEGIS -->
+      <div class="patent-card reveal reveal-delay-2" data-patent="AEGIS">
+        <div class="patent-corner"></div>
+        <div class="patent-status">Patent Filed · 2026</div>
+        <div class="patent-code">AEGIS</div>
+        <div class="patent-name">Adaptive Enclave-Guided Institutional Sentinel</div>
+        <div class="patent-section-label">// PROBLEM</div>
+        <p class="patent-text">Conventional institutional attendance and identity verification systems rely on manual processes, static camera systems, or basic biometric devices, remaining vulnerable to proxy attendance, spoofing attempts, and privacy concerns regarding biometric data storage.</p>
+        <div class="patent-section-label">// ENGINEERING SOLUTION</div>
+        <p class="patent-text">Adaptive edge-AI surveillance system integrating recognition-guided optical actuation and secure biometric processing for privacy-preserving attendance auditing.</p>
+        <div class="patent-footer">
+          <span class="patent-tag">Intelligent Surveillance</span>
+          <span class="patent-year">2026</span>
+        
+          <div class="card-hint">// CLICK TO KNOW MORE ›</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+<section id="robotics">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-eyebrow">// STATION 01 — ROBOTICS LAB</div>
+      <h2 class="section-title">Robotic Systems</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="robotics-grid">
+
+      <div class="project-card reveal">
+        <div class="project-visual">
+          <svg width="220" height="160" viewBox="0 0 220 160">
+            <!-- Robotic arm SVG -->
+            <g stroke="#00e5ff" fill="none" stroke-width="1.5">
+              <rect x="95" y="120" width="30" height="20" rx="2" fill="rgba(0,229,255,0.08)"/>
+              <line x1="110" y1="120" x2="110" y2="100"/>
+              <rect x="90" y="90" width="40" height="12" rx="2" fill="rgba(0,229,255,0.08)"/>
+              <line x1="90" y1="96" x2="60" y2="72" class="arm-seg1"/>
+              <rect x="38" y="62" width="26" height="12" rx="2" fill="rgba(0,229,255,0.08)" transform="rotate(-35,51,68)"/>
+              <line x1="51" y1="62" x2="70" y2="40" class="arm-seg2"/>
+              <rect x="60" y="30" width="24" height="10" rx="2" fill="rgba(0,229,255,0.08)" transform="rotate(20,72,35)"/>
+              <!-- gripper -->
+              <line x1="76" y1="35" x2="66" y2="22"/>
+              <line x1="76" y1="35" x2="86" y2="22"/>
+              <line x1="66" y1="22" x2="62" y2="16"/>
+              <line x1="86" y1="22" x2="90" y2="16"/>
+            </g>
+            <!-- Joint circles -->
+            <g fill="#00e5ff" opacity="0.8">
+              <circle cx="110" cy="120" r="4"/>
+              <circle cx="90" cy="96" r="3"/>
+              <circle cx="51" cy="68" r="3"/>
+              <circle cx="76" cy="35" r="3"/>
+            </g>
+            <!-- Scan lines -->
+            <g stroke="#00ff88" stroke-width="0.5" opacity="0.3">
+              <line x1="0" y1="40" x2="220" y2="40" class="scan-line"/>
+              <line x1="0" y1="80" x2="220" y2="80" class="scan-line"/>
+              <line x1="0" y1="120" x2="220" y2="120" class="scan-line"/>
+            </g>
+          </svg>
+          <div class="project-visual-label">ARM_CTRL_v2.3</div>
+        </div>
+        <div class="project-info">
+          <div class="project-title">Gesture Controlled Robotic Arm</div>
+          <p class="project-desc">Multi-axis robotic arm controlled via real-time gesture recognition, featuring servo-driven joints and closed-loop positional feedback for precision manipulation tasks.</p>
+          <div class="project-tags">
+            <span class="ptag">Servo Control</span>
+            <span class="ptag">Gesture Recognition</span>
+            <span class="ptag">Closed-Loop</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card reveal reveal-delay-1">
+        <div class="project-visual">
+          <svg width="220" height="160" viewBox="0 0 220 160">
+            <!-- Rover SVG -->
+            <g stroke="#00e5ff" fill="none" stroke-width="1.5">
+              <!-- Body -->
+              <rect x="55" y="55" width="110" height="60" rx="4" fill="rgba(0,229,255,0.06)"/>
+              <!-- Sensors on top -->
+              <rect x="75" y="40" width="70" height="18" rx="2" fill="rgba(0,229,255,0.1)"/>
+              <circle cx="90" cy="49" r="5" fill="rgba(0,229,255,0.2)"/>
+              <circle cx="110" cy="49" r="5" fill="rgba(0,229,255,0.2)"/>
+              <circle cx="130" cy="49" r="5" fill="rgba(0,229,255,0.2)"/>
+              <!-- Wheels -->
+              <circle cx="72" cy="118" r="16" fill="rgba(0,229,255,0.05)"/>
+              <circle cx="72" cy="118" r="10"/>
+              <circle cx="148" cy="118" r="16" fill="rgba(0,229,255,0.05)"/>
+              <circle cx="148" cy="118" r="10"/>
+              <!-- Module slot lines -->
+              <line x1="80" y1="68" x2="140" y2="68"/>
+              <line x1="80" y1="82" x2="140" y2="82"/>
+              <line x1="80" y1="96" x2="140" y2="96"/>
+              <!-- Pogo pin indicator -->
+              <rect x="100" y="62" width="20" height="6" rx="1" fill="rgba(0,255,136,0.15)" stroke="#00ff88" stroke-width="1"/>
+            </g>
+            <!-- Terrain scan dots -->
+            <g fill="#00ff88" opacity="0.6">
+              <circle cx="30" cy="145" r="2"/>
+              <circle cx="50" cy="138" r="2"/>
+              <circle cx="70" cy="142" r="2"/>
+              <circle cx="90" cy="135" r="2"/>
+              <circle cx="130" cy="140" r="2"/>
+              <circle cx="160" cy="136" r="2"/>
+              <circle cx="185" cy="143" r="2"/>
+            </g>
+          </svg>
+          <div class="project-visual-label">ROVER_SYS_v4.1</div>
+        </div>
+        <div class="project-info">
+          <div class="project-title">Autonomous Rover Series (MORPH / PRANA)</div>
+          <p class="project-desc">Multi-domain autonomous rover platforms with hot-swappable sensor modules. MORPH deploys across varied operational terrains; PRANA targets precision agriculture with adaptive field operations.</p>
+          <div class="project-tags">
+            <span class="ptag">Autonomous Nav</span>
+            <span class="ptag">Modular Hardware</span>
+            <span class="ptag">AI Vision</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="project-visual">
+          <svg width="220" height="160" viewBox="0 0 220 160">
+            <!-- UAV Zarvex -->
+            <g stroke="#00e5ff" fill="none" stroke-width="1.5">
+              <!-- Central body -->
+              <rect x="92" y="68" width="36" height="24" rx="4" fill="rgba(0,229,255,0.1)"/>
+              <!-- Arms -->
+              <line x1="92" y1="72" x2="50" y2="50"/>
+              <line x1="128" y1="72" x2="170" y2="50"/>
+              <line x1="92" y1="88" x2="50" y2="110"/>
+              <line x1="128" y1="88" x2="170" y2="110"/>
+              <!-- Rotors -->
+              <ellipse cx="50" cy="50" rx="20" ry="6" fill="rgba(0,229,255,0.08)"/>
+              <ellipse cx="170" cy="50" rx="20" ry="6" fill="rgba(0,229,255,0.08)"/>
+              <ellipse cx="50" cy="110" rx="20" ry="6" fill="rgba(0,229,255,0.08)"/>
+              <ellipse cx="170" cy="110" rx="20" ry="6" fill="rgba(0,229,255,0.08)"/>
+              <!-- Vectoring indicators -->
+              <line x1="50" y1="44" x2="60" y2="36" stroke="#00ff88" stroke-dasharray="3,2"/>
+              <line x1="170" y1="44" x2="180" y2="36" stroke="#00ff88" stroke-dasharray="3,2"/>
+            </g>
+            <text x="98" y="82" font-family="Share Tech Mono" font-size="7" fill="#00e5ff">ZRVX</text>
+          </svg>
+          <div class="project-visual-label">UAV_ZARVEX_v1.0</div>
+        </div>
+        <div class="project-info">
+          <div class="project-title">ZARVEX — Zero-Tilt UAV System</div>
+          <p class="project-desc">Precision aerial surveillance platform using independently vectored propulsion with AI-based IMU stabilization. Maintains zero-tilt orientation during complex directional maneuvers.</p>
+          <div class="project-tags">
+            <span class="ptag">UAV</span>
+            <span class="ptag">IMU Fusion</span>
+            <span class="ptag">Vectored Thrust</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card reveal reveal-delay-1">
+        <div class="project-visual" style="background: linear-gradient(180deg, #050d1a 0%, #071528 100%);">
+          <svg width="220" height="160" viewBox="0 0 220 160">
+            <!-- Swarm nodes -->
+            <g>
+              <!-- Node 1 -->
+              <circle cx="110" cy="80" r="8" fill="rgba(0,229,255,0.15)" stroke="#00e5ff" stroke-width="1.5"/>
+              <circle cx="60" cy="50" r="6" fill="rgba(0,229,255,0.1)" stroke="#00e5ff" stroke-width="1"/>
+              <circle cx="160" cy="50" r="6" fill="rgba(0,229,255,0.1)" stroke="#00e5ff" stroke-width="1"/>
+              <circle cx="60" cy="110" r="6" fill="rgba(0,229,255,0.1)" stroke="#00e5ff" stroke-width="1"/>
+              <circle cx="160" cy="110" r="6" fill="rgba(0,229,255,0.1)" stroke="#00e5ff" stroke-width="1"/>
+              <circle cx="110" cy="30" r="5" fill="rgba(0,255,136,0.1)" stroke="#00ff88" stroke-width="1"/>
+              <circle cx="110" cy="130" r="5" fill="rgba(0,255,136,0.1)" stroke="#00ff88" stroke-width="1"/>
+              <!-- Links -->
+              <line x1="110" y1="80" x2="60" y2="50" stroke="#00e5ff" stroke-width="0.5" opacity="0.4"/>
+              <line x1="110" y1="80" x2="160" y2="50" stroke="#00e5ff" stroke-width="0.5" opacity="0.4"/>
+              <line x1="110" y1="80" x2="60" y2="110" stroke="#00e5ff" stroke-width="0.5" opacity="0.4"/>
+              <line x1="110" y1="80" x2="160" y2="110" stroke="#00e5ff" stroke-width="0.5" opacity="0.4"/>
+              <line x1="110" y1="80" x2="110" y2="30" stroke="#00ff88" stroke-width="0.5" opacity="0.4"/>
+              <line x1="110" y1="80" x2="110" y2="130" stroke="#00ff88" stroke-width="0.5" opacity="0.4"/>
+              <line x1="60" y1="50" x2="60" y2="110" stroke="#00e5ff" stroke-width="0.3" opacity="0.25"/>
+              <line x1="160" y1="50" x2="160" y2="110" stroke="#00e5ff" stroke-width="0.3" opacity="0.25"/>
+            </g>
+          </svg>
+          <div class="project-visual-label">SWARM_NODE_v0.9</div>
+        </div>
+        <div class="project-info">
+          <div class="project-title">Swarm Robotics Platform</div>
+          <p class="project-desc">Distributed swarm coordination research focusing on mesh-based inter-agent communication, emergent behavior algorithms, and resilient formation control without central coordination.</p>
+          <div class="project-tags">
+            <span class="ptag">Swarm Intelligence</span>
+            <span class="ptag">Mesh Comms</span>
+            <span class="ptag">Formation Control</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card reveal reveal-delay-1">
+        <div class="project-visual" style="background: linear-gradient(180deg, #050d1a 0%, #071528 100%);">
+          <svg width="220" height="160" viewBox="0 0 220 160">
+            <!-- AEGIS surveillance visual -->
+            <g stroke="#00e5ff" fill="none" stroke-width="1.2">
+              <!-- Camera body -->
+              <rect x="88" y="18" width="44" height="22" rx="3" fill="rgba(0,229,255,0.1)"/>
+              <circle cx="110" cy="29" r="7" fill="rgba(0,229,255,0.08)" stroke="#00e5ff" stroke-width="1.5"/>
+              <circle cx="110" cy="29" r="3" fill="rgba(0,229,255,0.4)"/>
+              <!-- Mount -->
+              <line x1="110" y1="40" x2="110" y2="52"/>
+              <rect x="102" y="52" width="16" height="6" rx="1" fill="rgba(0,229,255,0.1)"/>
+            </g>
+            <!-- FOV cone -->
+            <path d="M110,40 L48,138 L172,138 Z" fill="rgba(0,229,255,0.04)" stroke="rgba(0,229,255,0.2)" stroke-width="0.8"/>
+            <!-- Scan lines in FOV -->
+            <g stroke="rgba(0,229,255,0.12)" stroke-width="0.6">
+              <line x1="110" y1="40" x2="60" y2="138"/>
+              <line x1="110" y1="40" x2="85" y2="138"/>
+              <line x1="110" y1="40" x2="135" y2="138"/>
+              <line x1="110" y1="40" x2="160" y2="138"/>
+            </g>
+            <!-- Detection bounding box -->
+            <rect x="82" y="88" width="56" height="38" fill="none" stroke="#00ff88" stroke-width="1.2" stroke-dasharray="4,2"/>
+            <!-- Corner ticks -->
+            <g stroke="#00ff88" stroke-width="1.5">
+              <polyline points="82,96 82,88 90,88"/>
+              <polyline points="130,88 138,88 138,96"/>
+              <polyline points="82,118 82,126 90,126"/>
+              <polyline points="130,126 138,126 138,118"/>
+            </g>
+            <!-- ID label -->
+            <text x="85" y="84" font-family="Share Tech Mono" font-size="6" fill="#00ff88">ID:VERIFIED</text>
+            <!-- Horizontal sweep line -->
+            <line x1="68" y1="108" x2="152" y2="108" stroke="rgba(0,255,136,0.3)" stroke-width="1" stroke-dasharray="3,3"/>
+          </svg>
+          <div class="project-visual-label">AEGIS_CORE_v1.0</div>
+        </div>
+        <div class="project-info">
+          <div class="project-title">AEGIS — Institutional Sentinel System</div>
+          <p class="project-desc">Edge-AI surveillance platform designed for automated institutional identity verification and attendance auditing through intelligent sensing and adaptive optical positioning.</p>
+          <div class="project-tags">
+            <span class="ptag">Edge AI</span>
+            <span class="ptag">Computer Vision</span>
+            <span class="ptag">Autonomous Monitoring</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card reveal reveal-delay-2">
+        <div class="project-visual" style="background: linear-gradient(180deg, #050d1a 0%, #071528 100%);">
+          <svg width="220" height="160" viewBox="0 0 220 160">
+            <!-- AQUENTIS smart faucet / water system -->
+            <g stroke="#00e5ff" fill="none" stroke-width="1.2">
+              <!-- Pipe body -->
+              <rect x="96" y="10" width="28" height="60" rx="4" fill="rgba(0,229,255,0.07)"/>
+              <!-- Faucet spout -->
+              <path d="M96,55 Q72,55 72,75 L72,90" stroke="#00e5ff" stroke-width="1.5" fill="none"/>
+              <!-- Sensor band on pipe -->
+              <rect x="94" y="32" width="32" height="10" rx="2" fill="rgba(0,255,136,0.12)" stroke="#00ff88" stroke-width="1"/>
+              <text x="97" y="40" font-family="Share Tech Mono" font-size="5.5" fill="#00ff88">SENSOR</text>
+              <!-- Flow droplets from spout -->
+              <ellipse cx="72" cy="98"  rx="3" ry="4" fill="rgba(0,229,255,0.35)" stroke="#00e5ff" stroke-width="0.8"/>
+              <ellipse cx="70" cy="110" rx="2.5" ry="3.5" fill="rgba(0,229,255,0.25)" stroke="#00e5ff" stroke-width="0.8"/>
+              <ellipse cx="73" cy="121" rx="2" ry="3" fill="rgba(0,229,255,0.18)" stroke="#00e5ff" stroke-width="0.8"/>
+            </g>
+            <!-- Ripple rings from water impact -->
+            <g fill="none">
+              <ellipse cx="72" cy="138" rx="10" ry="4" stroke="rgba(0,229,255,0.25)" stroke-width="0.8"/>
+              <ellipse cx="72" cy="138" rx="18" ry="6" stroke="rgba(0,229,255,0.14)" stroke-width="0.8"/>
+              <ellipse cx="72" cy="138" rx="26" ry="8" stroke="rgba(0,229,255,0.07)" stroke-width="0.8"/>
+            </g>
+            <!-- Quality readout panel -->
+            <rect x="126" y="30" width="68" height="60" rx="2" fill="rgba(0,229,255,0.04)" stroke="rgba(0,229,255,0.2)" stroke-width="0.8"/>
+            <text x="131" y="43" font-family="Share Tech Mono" font-size="5.5" fill="rgba(0,229,255,0.5)">// QUALITY</text>
+            <text x="131" y="55" font-family="Share Tech Mono" font-size="6.5" fill="#00ff88">pH   7.2</text>
+            <text x="131" y="66" font-family="Share Tech Mono" font-size="6.5" fill="#00e5ff">TDS  82</text>
+            <text x="131" y="77" font-family="Share Tech Mono" font-size="6.5" fill="#00e5ff">TEMP 22°</text>
+            <text x="131" y="88" font-family="Share Tech Mono" font-size="6.5" fill="#00ff88">FLOW ✓</text>
+          </svg>
+          <div class="project-visual-label">AQUENTIS_v1.0</div>
+        </div>
+        <div class="project-info">
+          <div class="project-title">AQUENTIS — Intelligent Water Dispensing System</div>
+          <p class="project-desc">Sensor-driven smart infrastructure platform integrating water quality monitoring and adaptive flow control for intelligent resource management.</p>
+          <div class="project-tags">
+            <span class="ptag">IoT</span>
+            <span class="ptag">Smart Infrastructure</span>
+            <span class="ptag">Embedded Sensors</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- COMMS -->
+<section id="comms">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-eyebrow green">// STATION 02 — COMMUNICATION SYSTEMS LAB</div>
+      <h2 class="section-title">Network Architectures</h2>
+      <div class="section-line green"></div>
+    </div>
+
+    <div class="comms-visual reveal">
+      <div class="comms-label">// MESH NETWORK SIMULATION — LIVE</div>
+      <canvas class="comms-canvas" id="meshCanvas"></canvas>
+    </div>
+
+    <div class="comms-cards">
+      <div class="comms-card reveal">
+        <div class="comms-card-icon">// SYS-04</div>
+        <h3>CITADEL</h3>
+        <p>Emergency wearable communication mesh routing across LoRa, LTE-M, and BLE bearers. Designed for infrastructure-free operation in disaster and remote deployment scenarios.</p>
+      </div>
+      <div class="comms-card reveal reveal-delay-1">
+        <div class="comms-card-icon">// SYS-06</div>
+        <h3>SLPA-ZT</h3>
+        <p>Self-learning priority-aware zero-trust mesh framework. Addresses energy efficiency, routing reliability, and trust management among constrained wireless devices.</p>
+      </div>
+      <div class="comms-card reveal reveal-delay-2">
+        <div class="comms-card-icon">// SYS-07</div>
+        <h3>SIMA</h3>
+        <p>Immutable packet propagation architecture across heterogeneous networks. Eliminates in-transit packet modification to reduce complexity in multi-protocol communication systems.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- EMBEDDED -->
+<section id="embedded">
+  <div class="section-inner">
+    <div class="embedded-grid">
+      <!-- LEFT: sticky column with header + animation -->
+      <div class="embedded-left">
+        <div class="section-header reveal">
+          <div class="section-eyebrow">// STATION 03 — EMBEDDED SYSTEMS BENCH</div>
+          <h2 class="section-title">Hardware Platforms</h2>
+          <div class="section-line"></div>
+        </div>
+        <div class="circuit-visual reveal">
+          <canvas id="circuitCanvas"></canvas>
+        </div>
+      </div>
+      <!-- RIGHT: scrolling cards -->
+      <div class="embedded-projects">
+        <div class="ep-item reveal">
+          <div class="ep-title">UNIMOUNT Platform</div>
+          <p class="ep-desc">Universal hardware platform with passive cartridge-based application switching. Enables deployment reconfiguration without system replacement.</p>
+          <div class="ep-domain">Embedded Architecture</div>
+        </div>
+        <div class="ep-item reveal reveal-delay-1">
+          <div class="ep-title">AQUENTIS Smart Faucet</div>
+          <p class="ep-desc">IoT-integrated water management system with real-time quality sensing and adaptive flow control. Sensor-actuator closed-loop design.</p>
+          <div class="ep-domain">Smart Infrastructure · IoT</div>
+        </div>
+        <div class="ep-item reveal reveal-delay-2">
+          <div class="ep-title">AEGIS Surveillance Platform</div>
+          <p class="ep-desc">Edge computing surveillance architecture integrating intelligent sensing pipelines and privacy-aware identity verification modules.</p>
+          <div class="ep-domain">Intelligent Surveillance Systems</div>
+        </div>
+        <div class="ep-item reveal reveal-delay-3">
+          <div class="ep-title">Distributed MCU Architecture</div>
+          <p class="ep-desc">Multi-microcontroller coordination frameworks used across rover and mesh platforms. Fault-tolerant task distribution over embedded hardware clusters.</p>
+          <div class="ep-domain">Distributed Embedded Systems</div>
+        </div>
+        <div class="ep-item reveal reveal-delay-4">
+          <div class="ep-title">Sensor Fusion Modules</div>
+          <p class="ep-desc">IMU, environmental, and proximity sensor fusion pipelines for robotics and UAV applications. Real-time state estimation on resource-constrained hardware.</p>
+          <div class="ep-domain">Sensor Systems · RTOS</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- VLSI -->
+<section id="vlsi">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-eyebrow">// STATION 04 — VLSI DESIGN DESK</div>
+      <h2 class="section-title">Hardware Architecture</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="vlsi-grid">
+      <div class="vlsi-visual reveal">
+        <div class="vlsi-title">// APPROXIMATE FULL ADDER — LOGIC DIAGRAM</div>
+        <svg viewBox="0 0 320 200" style="width:100%;height:auto;">
+          <defs>
+            <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#00e5ff"/>
+            </marker>
+          </defs>
+          <!-- Input lines -->
+          <text x="10" y="68" font-family="Share Tech Mono" font-size="10" fill="#00e5ff">A</text>
+          <line x1="22" y1="65" x2="60" y2="65" stroke="#00e5ff" stroke-width="1" marker-end="url(#arr)"/>
+          <text x="10" y="108" font-family="Share Tech Mono" font-size="10" fill="#00e5ff">B</text>
+          <line x1="22" y1="105" x2="60" y2="105" stroke="#00e5ff" stroke-width="1" marker-end="url(#arr)"/>
+          <text x="10" y="148" font-family="Share Tech Mono" font-size="10" fill="#00ff88">Cin</text>
+          <line x1="30" y1="145" x2="60" y2="145" stroke="#00ff88" stroke-width="1" marker-end="url(#arr)"/>
+
+          <!-- XOR gate 1 -->
+          <path d="M60,55 Q80,85 60,115 Q95,85 60,55 Z" fill="rgba(0,229,255,0.08)" stroke="#00e5ff" stroke-width="1.2"/>
+          <path d="M57,55 Q77,85 57,115" fill="none" stroke="#00e5ff" stroke-width="1"/>
+          <text x="70" y="89" font-family="Share Tech Mono" font-size="8" fill="#00e5ff">XOR</text>
+          <line x1="93" y1="85" x2="120" y2="85" stroke="#00e5ff" stroke-width="1"/>
+
+          <!-- AND gate -->
+          <path d="M120,60 L140,60 Q165,60 165,85 Q165,110 140,110 L120,110 Z" fill="rgba(0,229,255,0.08)" stroke="#00e5ff" stroke-width="1.2"/>
+          <text x="127" y="89" font-family="Share Tech Mono" font-size="8" fill="#00e5ff">AND</text>
+          <line x1="165" y1="85" x2="200" y2="85" stroke="#00e5ff" stroke-width="1"/>
+          <line x1="120" y1="75" x2="93" y2="75" stroke="#00e5ff" stroke-width="0.8" stroke-dasharray="3,2"/>
+          <line x1="120" y1="95" x2="93" y2="115" stroke="#00e5ff" stroke-width="0.8" stroke-dasharray="3,2"/>
+
+          <!-- XOR gate 2 -->
+          <path d="M120,130 Q140,160 120,190 Q155,160 120,130 Z" fill="rgba(0,255,136,0.08)" stroke="#00ff88" stroke-width="1.2"/>
+          <path d="M117,130 Q137,160 117,190" fill="none" stroke="#00ff88" stroke-width="1"/>
+          <text x="128" y="163" font-family="Share Tech Mono" font-size="8" fill="#00ff88">XOR</text>
+          <line x1="93" y1="85" x2="106" y2="155" stroke="#00e5ff" stroke-width="0.7" stroke-dasharray="4,2" opacity="0.5"/>
+          <line x1="60" y1="145" x2="120" y2="160" stroke="#00ff88" stroke-width="0.8"/>
+          <line x1="152" y1="160" x2="200" y2="160" stroke="#00ff88" stroke-width="1"/>
+
+          <!-- Outputs -->
+          <text x="205" y="89" font-family="Share Tech Mono" font-size="10" fill="#00e5ff">Cout</text>
+          <text x="205" y="163" font-family="Share Tech Mono" font-size="10" fill="#00ff88">Sum</text>
+
+          <!-- OR gate -->
+          <path d="M200,75 Q215,85 200,95 Q230,85 200,75 Z" fill="rgba(0,229,255,0.06)" stroke="#00e5ff" stroke-width="1"/>
+        </svg>
+      </div>
+
+      <div class="waveform-container reveal reveal-delay-1">
+        <div class="waveform-label">// SIMULATION WAVEFORMS — APPROXIMATE ADDER</div>
+        <div class="waveform-row">
+          <span class="waveform-id">A</span>
+          <div class="waveform-line">
+            <svg viewBox="0 0 200 24" preserveAspectRatio="none">
+              <polyline points="0,20 0,4 25,4 25,20 50,20 50,4 75,4 75,20 100,20 100,4 125,4 125,20 150,20 150,4 175,4 175,20 200,20" fill="none" stroke="#00e5ff" stroke-width="1.5"/>
+            </svg>
+          </div>
+        </div>
+        <div class="waveform-row">
+          <span class="waveform-id">B</span>
+          <div class="waveform-line">
+            <svg viewBox="0 0 200 24" preserveAspectRatio="none">
+              <polyline points="0,20 0,20 50,20 50,4 100,4 100,20 100,20 150,20 150,4 200,4 200,20" fill="none" stroke="#00e5ff" stroke-width="1.5"/>
+            </svg>
+          </div>
+        </div>
+        <div class="waveform-row">
+          <span class="waveform-id">Cin</span>
+          <div class="waveform-line">
+            <svg viewBox="0 0 200 24" preserveAspectRatio="none">
+              <polyline points="0,4 0,4 100,4 100,20 200,20" fill="none" stroke="#00ff88" stroke-width="1.5"/>
+            </svg>
+          </div>
+        </div>
+        <div class="waveform-row" style="margin-top:0.5rem;border-top:1px solid var(--border);padding-top:0.5rem">
+          <span class="waveform-id">Sum</span>
+          <div class="waveform-line">
+            <svg viewBox="0 0 200 24" preserveAspectRatio="none">
+              <polyline points="0,4 25,4 25,20 50,20 50,4 75,4 75,20 100,20 100,4 125,4 125,20 150,4 150,20 175,20 175,4 200,4" fill="none" stroke="#ffaa00" stroke-width="1.5"/>
+            </svg>
+          </div>
+        </div>
+        <div class="waveform-row">
+          <span class="waveform-id">Cout</span>
+          <div class="waveform-line">
+            <svg viewBox="0 0 200 24" preserveAspectRatio="none">
+              <polyline points="0,20 50,20 50,4 75,4 75,20 100,20 100,4 150,4 150,20 200,20" fill="none" stroke="#ffaa00" stroke-width="1.5"/>
+            </svg>
+          </div>
+        </div>
+        <div style="margin-top:1.5rem;">
+          <div class="vlsi-title">// FOCUS AREA</div>
+          <p style="font-size:0.8rem;line-height:1.65;color:var(--text);font-weight:300;">
+            Approximate computing circuits for energy-efficient hardware. Research into error-tolerant arithmetic units for applications in AI inference hardware and sensor processing pipelines where computational accuracy can be traded for significant power reduction.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- RESEARCH -->
+<section id="research">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-eyebrow">// RESEARCH WALL</div>
+      <h2 class="section-title">Active Research</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="research-grid">
+      <div class="research-card reveal">
+        <div class="research-card-icon">// RESEARCH_NODE_01 · ROBOTICS</div>
+        <h3>Swarm Robotics Communication Architectures</h3>
+        <p>Investigation into distributed coordination protocols for autonomous agent swarms operating in GPS-denied environments. Focus on emergent consensus mechanisms, self-organizing topology adaptation, and energy-balanced message propagation without centralized orchestration.</p>
+      </div>
+      <div class="research-card reveal reveal-delay-1">
+        <div class="research-card-icon">// RESEARCH_NODE_02 · NETWORKS</div>
+        <h3>Infrastructure-Free Emergency Communication Networks</h3>
+        <p>Research into resilient communication frameworks for disaster-response and remote operations where fixed infrastructure is absent or compromised. Examining multi-bearer adaptive routing, energy harvesting integration, and trust establishment in ad-hoc mesh environments.</p>
+      </div>
+      <div class="research-card reveal">
+        <div class="research-card-icon">// RESEARCH_NODE_03 · HARDWARE</div>
+        <h3>Modular Hardware Platform Architectures</h3>
+        <p>Exploration of reconfigurable hardware systems that can adapt their operational profile through physical and logical cartridge-based switching. Targeting universal embedded deployment without platform-specific redesign cycles.</p>
+      </div>
+      <div class="research-card reveal reveal-delay-1">
+        <div class="research-card-icon">// RESEARCH_NODE_04 · VLSI</div>
+        <h3>Approximate Computing for Edge Intelligence</h3>
+        <p>Design and simulation of error-tolerant digital circuits for AI inference at the hardware edge. Evaluating quality-of-result tradeoffs in arithmetic units targeting reduced power consumption and die area in sensor node processors.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ACHIEVEMENTS -->
+<section id="achievements">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-eyebrow">// RECOGNITION LOG</div>
+      <h2 class="section-title">Achievements</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="ach-grid">
+      <div class="ach-card reveal" data-ach="nokia">
+        <div class="ach-rank">01</div>
+        <div class="ach-icon">// WINNER</div>
+        <div class="ach-title">Nokia Campus Connect</div>
+        <p class="ach-desc">First-place recognition in Nokia's campus innovation challenge. Technology and systems design competition.</p>
+      <div class="card-hint card-hint--amber">// CLICK TO KNOW MORE ›</div>
+      </div>
+      <div class="ach-card reveal reveal-delay-1" data-ach="iaic">
+        <div class="ach-rank">02</div>
+        <div class="ach-icon">// 2ND PRIZE</div>
+        <div class="ach-title">IAIC Recognition</div>
+        <p class="ach-desc">Second prize at the India Artificial Intelligence Championship, recognizing applied AI and hardware innovation.</p>
+      <div class="card-hint card-hint--amber">// CLICK TO KNOW MORE ›</div>
+      </div>
+      <div class="ach-card reveal reveal-delay-2" data-ach="msme">
+        <div class="ach-rank">03</div>
+        <div class="ach-icon">// SELECTED</div>
+        <div class="ach-title">MSME Hackathon</div>
+        <p class="ach-desc">Selected participant in MSME national hackathon, contributing systems engineering solutions for industry challenges.</p>
+      <div class="card-hint card-hint--amber">// CLICK TO KNOW MORE ›</div>
+      </div>
+      <div class="ach-card reveal reveal-delay-3" data-ach="sih">
+        <div class="ach-rank">04</div>
+        <div class="ach-icon">// TOP 500</div>
+        <div class="ach-title">Smart India Hackathon (SIH)</div>
+        <p class="ach-desc">Selected among the Top 500 teams nationally for our problem statement. Served as team leader, guiding system design, development strategy, and project execution.</p>
+      <div class="card-hint card-hint--amber">// CLICK TO KNOW MORE ›</div>
+      </div>
+      <div class="ach-card reveal" data-ach="ukinnovate">
+        <div class="ach-rank">05</div>
+        <div class="ach-icon">// PRESENTER</div>
+        <div class="ach-title">UK Innovate Presenter</div>
+        <p class="ach-desc">International presenter at UK Innovate — presenting advanced engineering research to a global innovation audience.</p>
+      <div class="card-hint card-hint--amber">// CLICK TO KNOW MORE ›</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- OTHER PROJECTS -->
+<section id="other-projects">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-eyebrow">// AUXILIARY SYSTEMS</div>
+      <h2 class="section-title">Other Projects</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="robotics-grid">
+
+      <div class="project-card reveal" data-project="homesecurity" style="cursor:pointer;">
+        <div class="project-visual" style="background:linear-gradient(180deg,#050d1a 0%,#071528 100%);">
+          <svg width="220" height="160" viewBox="0 0 220 160">
+            <g stroke="#00e5ff" fill="none" stroke-width="1.2">
+              <polygon points="110,20 60,60 60,130 160,130 160,60" fill="rgba(0,229,255,0.07)"/>
+              <rect x="90" y="90" width="40" height="40" rx="2" fill="rgba(0,229,255,0.05)"/>
+              <circle cx="110" cy="72" r="10" fill="rgba(0,229,255,0.1)"/>
+              <circle cx="110" cy="72" r="4" fill="rgba(0,229,255,0.5)"/>
+              <line x1="60" y1="60" x2="110" y2="20"/><line x1="160" y1="60" x2="110" y2="20"/>
+            </g>
+            <g stroke="#00ff88" stroke-width="0.8" fill="none">
+              <rect x="75" y="55" width="16" height="10" rx="1"/>
+              <rect x="130" y="55" width="16" height="10" rx="1"/>
+            </g>
+            <text x="85" y="148" font-family="Share Tech Mono" font-size="6" fill="rgba(0,229,255,0.4)">SHIELD_v1.0 · SECURED</text>
+          </svg>
+          <div class="project-visual-label">HOME_SEC_v1.0</div>
+        </div>
+        <div class="project-info">
+          <div class="project-title">Home Security System</div>
+          <p class="project-desc">Distributed smart security architecture integrating IR sensing, RFID authentication, and environmental monitoring. Real-time data uploaded to the cloud for remote global access.</p>
+          <div class="project-tags"><span class="ptag">IoT</span><span class="ptag">RFID</span><span class="ptag">Cloud</span></div>
+        </div>
+          <div class="card-hint">// CLICK TO KNOW MORE ›</div>
+      </div>
+
+      <div class="project-card reveal reveal-delay-1" data-project="remotecontrol" style="cursor:pointer;">
+        <div class="project-visual" style="background:linear-gradient(180deg,#050d1a 0%,#071528 100%);">
+          <svg width="220" height="160" viewBox="0 0 220 160">
+            <g stroke="#00e5ff" fill="none" stroke-width="1.2">
+              <rect x="75" y="30" width="70" height="100" rx="12" fill="rgba(0,229,255,0.07)"/>
+              <circle cx="110" cy="58" r="14" fill="rgba(0,229,255,0.08)"/>
+              <line x1="110" y1="44" x2="110" y2="72"/><line x1="96" y1="58" x2="124" y2="58"/>
+              <circle cx="90" cy="90" r="6" fill="rgba(0,229,255,0.08)"/><circle cx="110" cy="90" r="6" fill="rgba(0,229,255,0.08)"/><circle cx="130" cy="90" r="6" fill="rgba(0,229,255,0.08)"/>
+              <circle cx="90" cy="108" r="6" fill="rgba(0,229,255,0.08)"/><circle cx="110" cy="108" r="6" fill="rgba(0,229,255,0.08)"/><circle cx="130" cy="108" r="6" fill="rgba(0,229,255,0.08)"/>
+            </g>
+            <text x="85" y="148" font-family="Share Tech Mono" font-size="6" fill="rgba(0,229,255,0.4)">PICO_RC · LOW-LAT</text>
+          </svg>
+          <div class="project-visual-label">RC_PICO_v1.0</div>
+        </div>
+        <div class="project-info">
+          <div class="project-title">Custom Remote Controller</div>
+          <p class="project-desc">Low-latency robotic control system built on Raspberry Pi Pico for precise wireless control of MORPH, ZARVEX, and other rover platforms.</p>
+          <div class="project-tags"><span class="ptag">Raspberry Pi Pico</span><span class="ptag">Wireless</span><span class="ptag">Low-Latency</span></div>
+        </div>
+          <div class="card-hint">// CLICK TO KNOW MORE ›</div>
+      </div>
+
+      <div class="project-card reveal reveal-delay-2" data-project="smartclassroom" style="cursor:pointer;">
+        <div class="project-visual" style="background:linear-gradient(180deg,#050d1a 0%,#071528 100%);">
+          <svg width="220" height="160" viewBox="0 0 220 160">
+            <g stroke="#00e5ff" fill="none" stroke-width="1.2">
+              <rect x="30" y="30" width="160" height="90" rx="3" fill="rgba(0,229,255,0.05)"/>
+              <rect x="40" y="40" width="140" height="70" rx="2" fill="rgba(0,229,255,0.04)"/>
+              <line x1="40" y1="60" x2="180" y2="60" stroke="rgba(0,229,255,0.2)"/>
+              <line x1="40" y1="80" x2="180" y2="80" stroke="rgba(0,229,255,0.1)"/>
+              <line x1="40" y1="100" x2="180" y2="100" stroke="rgba(0,229,255,0.1)"/>
+            </g>
+            <g fill="#00ff88" opacity="0.6">
+              <rect x="50" y="65" width="30" height="8" rx="1"/><rect x="90" y="65" width="30" height="8" rx="1"/><rect x="130" y="65" width="30" height="8" rx="1"/>
+            </g>
+            <circle cx="110" cy="133" r="6" fill="rgba(0,229,255,0.2)" stroke="#00e5ff" stroke-width="1"/>
+            <text x="82" y="148" font-family="Share Tech Mono" font-size="6" fill="rgba(0,255,136,0.5)">ATTEND_SYS · ACTIVE</text>
+          </svg>
+          <div class="project-visual-label">CLASSROOM_v1.0</div>
+        </div>
+        <div class="project-info">
+          <div class="project-title">Intelligent Attendance &amp; Smart Classroom</div>
+          <p class="project-desc">Automated classroom system activating attendance logging on teacher presence detection. Multi-sensor integration with a custom web dashboard for real-time analytics and remote access.</p>
+          <div class="project-tags"><span class="ptag">Automation</span><span class="ptag">Dashboard</span><span class="ptag">Sensor Fusion</span></div>
+        </div>
+          <div class="card-hint">// CLICK TO KNOW MORE ›</div>
+      </div>
+
+      <div class="project-card reveal" data-project="multirover" style="cursor:pointer;">
+        <div class="project-visual" style="background:linear-gradient(180deg,#050d1a 0%,#071528 100%);">
+          <svg width="220" height="160" viewBox="0 0 220 160">
+            <g stroke="#00e5ff" fill="none" stroke-width="1">
+              <rect x="25" y="70" width="50" height="32" rx="3" fill="rgba(0,229,255,0.07)"/><circle cx="35" cy="105" r="8"/><circle cx="65" cy="105" r="8"/>
+              <rect x="85" y="55" width="50" height="32" rx="3" fill="rgba(0,229,255,0.07)"/><circle cx="95" cy="90" r="8"/><circle cx="125" cy="90" r="8"/>
+              <rect x="145" y="70" width="50" height="32" rx="3" fill="rgba(0,229,255,0.07)"/><circle cx="155" cy="105" r="8"/><circle cx="185" cy="105" r="8"/>
+            </g>
+            <g stroke="#00ff88" fill="none" stroke-width="0.8" stroke-dasharray="3,2">
+              <line x1="50" y1="86" x2="85" y2="71"/><line x1="135" y1="71" x2="145" y2="86"/>
+            </g>
+            <text x="68" y="148" font-family="Share Tech Mono" font-size="6" fill="rgba(0,229,255,0.4)">MULTI_ROVER · SWARM_READY</text>
+          </svg>
+          <div class="project-visual-label">ROVER_FLEET_v1.0</div>
+        </div>
+        <div class="project-info">
+          <div class="project-title">Multi-Rover Systems</div>
+          <p class="project-desc">Collection of autonomous and semi-autonomous robotic platforms for surveillance, monitoring, line following, and human tracking — demonstrating versatility across real-world deployment scenarios.</p>
+          <div class="project-tags"><span class="ptag">Autonomous</span><span class="ptag">Surveillance</span><span class="ptag">Multi-Platform</span></div>
+        </div>
+          <div class="card-hint">// CLICK TO KNOW MORE ›</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-inner">
+    <div class="section-header reveal" style="text-align:center;">
+      <div class="section-eyebrow" style="text-align:center">// COMMUNICATION CONSOLE</div>
+      <h2 class="section-title" style="text-align:center">Establish Connection</h2>
+      <div class="section-line" style="margin:1rem auto 0"></div>
+    </div>
+    <div class="contact-console reveal">
+      <div class="console-header">
+        <div class="console-dot"></div>
+        <div class="console-dot"></div>
+        <div class="console-dot"></div>
+        <span class="console-title">RITAM_LAB — COMMS TERMINAL v1.0</span>
+      </div>
+      <div class="console-line"><span class="prompt">$</span> whoami</div>
+      <div class="console-line" style="color:var(--cyan);padding-left:1.2rem;">ritam.pandey — engineer, inventor, researcher</div>
+      <div class="console-line" style="margin-top:0.5rem;"><span class="prompt">$</span> contact --list</div>
+      <div class="console-line" style="padding-left:1.2rem;">email &nbsp;&nbsp;→ <a href="mailto:ritam.pandey2005@gmail.com">ritam.pandey2005@gmail.com</a></div>
+      <div class="console-line" style="padding-left:1.2rem;">linkedin → <a href="https://www.linkedin.com/in/ritam-pandey-8912a93b8/" target="_blank">linkedin.com/in/ritam-pandey-8912a93b8</a></div>
+      <div class="console-line" style="margin-top:0.5rem;"><span class="prompt">$</span> status --collaboration</div>
+      <div class="console-message">
+        <p>"Open to collaborations in robotics, embedded systems, and intelligent hardware architectures."</p>
+      </div>
+      <div class="console-line" style="margin-top:1rem;"><span class="prompt">$</span> availability --status</div>
+      <div class="console-line cta-line" style="padding-left:1.2rem;">open to internships (robotics / embedded / systems)</div>
+      <div class="console-line cta-line" style="padding-left:1.2rem;">available for research collaboration</div>
+      <div class="console-line cta-line" style="padding-left:1.2rem;">seeking hardware r&amp;d roles</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     ENHANCEMENT BLOCK — MODALS, HOVER OVERLAYS, ACH MODALS
+     ═══════════════════════════════════════════════════════ -->
+
+<!-- PATENT MODAL -->
+<div id="patentModal" class="enh-modal-backdrop" aria-hidden="true">
+  <div class="enh-modal" id="patentModalInner">
+    <button class="enh-modal-close" id="patentModalClose" aria-label="Close">
+      <span>&#x2715;</span> ESC
+    </button>
+    <div class="enh-modal-eyebrow" id="pm-eyebrow">// PATENT SYSTEM</div>
+    <div class="enh-modal-header">
+      <div class="enh-modal-code" id="pm-code">MORPH</div>
+      <div class="enh-modal-name" id="pm-name">Modular Multi-Application Rover</div>
+      <div class="enh-modal-status" id="pm-status">Patent Filed · 2025</div>
+    </div>
+    <div class="enh-modal-body">
+      <div class="enh-modal-cols">
+        <div>
+          <div class="enh-section-label">// PROBLEM</div>
+          <p class="enh-modal-text" id="pm-problem"></p>
+        </div>
+        <div>
+          <div class="enh-section-label">// ENGINEERING SOLUTION</div>
+          <p class="enh-modal-text" id="pm-solution"></p>
+        </div>
+      </div>
+      <!-- DYNAMIC MEDIA — injected by JS -->
+      <div id="pm-media-container"></div>
+    </div>
+  </div>
+</div>
+
+<!-- IMAGE LIGHTBOX -->
+<div id="imgLightbox" class="enh-lightbox-backdrop" aria-hidden="true">
+  <button class="enh-lightbox-close" id="lightboxClose">&#x2715;</button>
+  <img id="lightboxImg" src="" alt="System Visual" class="enh-lightbox-img"/>
+  <div class="enh-lightbox-label" id="lightboxLabel"></div>
+</div>
+
+<!-- ACHIEVEMENT MODAL -->
+<div id="achModal" class="enh-modal-backdrop" aria-hidden="true">
+  <div class="enh-modal enh-modal--amber" id="achModalInner">
+    <button class="enh-modal-close enh-modal-close--amber" id="achModalClose" aria-label="Close">
+      <span>&#x2715;</span> ESC
+    </button>
+    <div class="enh-modal-eyebrow enh-eyebrow--amber" id="am-eyebrow">// RECOGNITION LOG</div>
+    <div class="enh-modal-header">
+      <div class="enh-modal-code enh-code--amber" id="am-rank">01</div>
+      <div class="enh-modal-name" id="am-title">Nokia Campus Connect</div>
+      <div class="enh-modal-status enh-status--amber" id="am-badge">// WINNER</div>
+    </div>
+    <div class="enh-modal-body">
+      <p class="enh-modal-text" id="am-desc"></p>
+      <!-- DYNAMIC MEDIA — injected by JS -->
+      <div id="am-media-container"></div>
+    </div>
+  </div>
+</div>
+
+<!-- OTHER PROJECT MODAL -->
+<div id="projModal" class="enh-modal-backdrop" aria-hidden="true">
+  <div class="enh-modal" id="projModalInner">
+    <button class="enh-modal-close" id="projModalClose" aria-label="Close">
+      <span>&#x2715;</span> ESC
+    </button>
+    <div class="enh-modal-eyebrow" id="proj-eyebrow">// AUXILIARY SYSTEM</div>
+    <div class="enh-modal-header">
+      <div class="enh-modal-code" id="proj-code" style="font-size:1.6rem;"></div>
+      <div class="enh-modal-name" id="proj-desc-text"></div>
+    </div>
+    <div class="enh-modal-body">
+      <div id="proj-media-container"></div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* ══ DYNAMIC MEDIA GRIDS ══ */
+.enh-media-section { margin-top: 2rem; }
+.enh-media-section + .enh-media-section { margin-top: 1.5rem; }
+
+.enh-img-grid-auto {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 0.8rem;
+}
+.enh-img-grid-auto.cols-1 { grid-template-columns: 1fr; }
+.enh-img-grid-auto.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.enh-img-grid-auto.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.enh-img-grid-auto.cols-4 { grid-template-columns: repeat(4, 1fr); }
+@media(max-width:640px){
+  .enh-img-grid-auto.cols-3,
+  .enh-img-grid-auto.cols-4 { grid-template-columns: repeat(2,1fr); }
+}
+@media(max-width:400px){
+  .enh-img-grid-auto { grid-template-columns: 1fr !important; }
+}
+
+.enh-media-thumb {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  border: 1px solid var(--border);
+  background: var(--mid-blue);
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.enh-media-thumb:hover { border-color: var(--cyan); transform: scale(1.02); }
+.enh-media-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.enh-media-thumb .thumb-placeholder {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 0.4rem; text-align: center; padding: 0.6rem;
+}
+.enh-media-thumb .thumb-placeholder span {
+  font-family: var(--font-mono); font-size: 0.6rem;
+  letter-spacing: 0.15em; color: rgba(0,229,255,0.35);
+}
+.enh-media-thumb .thumb-placeholder small {
+  font-family: var(--font-body); font-size: 0.6rem;
+  color: var(--text-dim); font-weight: 300; line-height: 1.4;
+}
+.enh-media-thumb.amber-style { border-color: var(--border); }
+.enh-media-thumb.amber-style:hover { border-color: var(--amber); }
+.enh-media-thumb.amber-style .thumb-placeholder span { color: rgba(255,170,0,0.35); }
+
+.enh-video-block {
+  margin-top: 0.8rem;
+  border: 1px dashed rgba(0,229,255,0.2);
+  background: rgba(0,229,255,0.02);
+  aspect-ratio: 16/7;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.enh-video-block:hover { border-color: rgba(0,229,255,0.5); }
+.enh-video-block-inner {
+  text-align: center; display: flex;
+  flex-direction: column; align-items: center; gap: 0.6rem;
+}
+.enh-video-play-icon {
+  width: 44px; height: 44px;
+  border: 1.5px solid rgba(0,229,255,0.4);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; color: var(--cyan);
+  transition: background 0.2s, border-color 0.2s;
+}
+.enh-video-block:hover .enh-video-play-icon {
+  background: rgba(0,229,255,0.1); border-color: var(--cyan);
+}
+.enh-video-block-text {
+  font-family: var(--font-body); font-size: 0.82rem;
+  color: var(--text-dim); font-weight: 300;
+}
+.enh-video-block-sub {
+  font-family: var(--font-mono); font-size: 0.55rem;
+  letter-spacing: 0.15em; color: rgba(0,229,255,0.3);
+  text-transform: uppercase;
+}
+
+/* ══ ENHANCED LIGHTBOX ══ */
+.enh-lightbox-backdrop {
+  position: fixed; inset: 0; z-index: 3000;
+  background: rgba(2,4,8,0.96);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.28s ease;
+}
+.enh-lightbox-backdrop.is-open { opacity: 1; pointer-events: all; }
+
+.enh-lightbox-media-wrap {
+  position: relative;
+  max-width: 92vw; max-height: 80vh;
+  display: flex; align-items: center; justify-content: center;
+  transform: scale(0.94);
+  transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
+}
+.enh-lightbox-backdrop.is-open .enh-lightbox-media-wrap { transform: scale(1); }
+
+.enh-lightbox-img {
+  max-width: 90vw; max-height: 80vh;
+  object-fit: contain;
+  border: 1px solid var(--border);
+  display: block;
+}
+.enh-lightbox-video-frame {
+  width: min(90vw, 900px);
+  aspect-ratio: 16/9;
+  border: 1px solid var(--border);
+  background: #000;
+}
+
+.enh-lightbox-close {
+  position: absolute; top: 1.2rem; right: 1.2rem;
+  font-size: 1.2rem; color: var(--text-dim);
+  background: none; border: 1px solid var(--border);
+  padding: 0.3rem 0.65rem; cursor: pointer;
+  line-height: 1; transition: color 0.2s, border-color 0.2s; z-index: 10;
+}
+.enh-lightbox-close:hover { color: var(--cyan); border-color: var(--cyan); }
+
+.enh-lightbox-label {
+  font-family: var(--font-mono); font-size: 0.6rem;
+  letter-spacing: 0.2em; color: var(--text-dim);
+  text-transform: uppercase; margin-top: 0.8rem;
+}
+
+/* Gallery nav arrows */
+.enh-lightbox-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(2,4,8,0.7); border: 1px solid var(--border);
+  color: var(--text-dim); font-size: 1.2rem;
+  padding: 0.5rem 0.8rem; cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.enh-lightbox-nav:hover { color: var(--cyan); border-color: var(--cyan); }
+.enh-lightbox-nav.prev { left: -3.5rem; }
+.enh-lightbox-nav.next { right: -3.5rem; }
+@media(max-width:700px){
+  .enh-lightbox-nav.prev { left: 0.4rem; }
+  .enh-lightbox-nav.next { right: 0.4rem; }
+}
+.enh-lightbox-counter {
+  font-family: var(--font-mono); font-size: 0.55rem;
+  letter-spacing: 0.2em; color: var(--text-dim);
+  margin-top: 0.4rem; text-align: center;
+}
+.patent-card { cursor: pointer; }
+.patent-card .card-overlay-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  z-index: 0;
+}
+.patent-card:hover .card-overlay-canvas { opacity: 1; }
+.patent-card > *:not(.card-overlay-canvas) { position: relative; z-index: 1; }
+.patent-card::before { z-index: 0; }
+
+/* ══════════════════════════════════════════
+   MODAL BACKDROP
+══════════════════════════════════════════ */
+.enh-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(2,4,8,0.88);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.32s ease;
+}
+.enh-modal-backdrop.is-open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ══════════════════════════════════════════
+   MODAL PANEL
+══════════════════════════════════════════ */
+.enh-modal {
+  background: #050d1a;
+  border: 1px solid rgba(0,229,255,0.35);
+  max-width: 860px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  transform: translateY(28px) scale(0.97);
+  transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,229,255,0.2) transparent;
+}
+.enh-modal::-webkit-scrollbar { width: 4px; }
+.enh-modal::-webkit-scrollbar-track { background: transparent; }
+.enh-modal::-webkit-scrollbar-thumb { background: rgba(0,229,255,0.2); }
+.enh-modal-backdrop.is-open .enh-modal {
+  transform: translateY(0) scale(1);
+}
+.enh-modal--amber {
+  border-color: rgba(255,170,0,0.35);
+}
+
+/* top accent bar */
+.enh-modal::before {
+  content: '';
+  display: block;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+}
+.enh-modal--amber::before {
+  background: linear-gradient(90deg, transparent, var(--amber), transparent);
+}
+
+/* ══════════════════════════════════════════
+   MODAL CLOSE BUTTON
+══════════════════════════════════════════ */
+.enh-modal-close {
+  position: absolute;
+  top: 1rem; right: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  background: rgba(0,229,255,0.05);
+  border: 1px solid var(--border);
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  z-index: 10;
+}
+.enh-modal-close:hover { color: var(--cyan); border-color: var(--cyan); background: rgba(0,229,255,0.1); }
+.enh-modal-close span { font-size: 0.8rem; }
+.enh-modal-close--amber:hover { color: var(--amber); border-color: var(--amber); background: rgba(255,170,0,0.1); }
+
+/* ══════════════════════════════════════════
+   MODAL CONTENT BLOCKS
+══════════════════════════════════════════ */
+.enh-modal-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.35em;
+  color: var(--cyan);
+  text-transform: uppercase;
+  padding: 1.5rem 2rem 0;
+}
+.enh-eyebrow--amber { color: var(--amber); }
+
+.enh-modal-header {
+  padding: 0.8rem 2rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.enh-modal-code {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 900;
+  color: var(--cyan);
+  line-height: 1;
+  letter-spacing: 0.04em;
+}
+.enh-code--amber { color: var(--amber); }
+.enh-modal-name {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 300;
+  color: var(--text-dim);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-top: 0.3rem;
+}
+.enh-modal-status {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--green);
+  margin-top: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.enh-modal-status::before {
+  content: '';
+  width: 5px; height: 5px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+.enh-status--amber { color: var(--amber); }
+.enh-status--amber::before { background: var(--amber); }
+
+.enh-modal-body { padding: 1.8rem 2rem 2rem; }
+
+.enh-modal-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+@media(max-width:600px){ .enh-modal-cols { grid-template-columns: 1fr; } }
+
+.enh-section-label {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.25em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+}
+.enh-modal-text {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  line-height: 1.75;
+  color: var(--text);
+  font-weight: 300;
+}
+
+/* ══════════════════════════════════════════
+   IMAGE GRID
+══════════════════════════════════════════ */
+.enh-img-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.8rem;
+  margin-top: 0.8rem;
+}
+.enh-img-grid--2 { grid-template-columns: repeat(2, 1fr); }
+@media(max-width:700px){ .enh-img-grid { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:400px){ .enh-img-grid { grid-template-columns: 1fr; } }
+
+.enh-img-slot { position: relative; }
+.enh-img-slot img {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  display: block;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.enh-img-slot img:hover { border-color: var(--cyan); transform: scale(1.02); }
+
+.enh-img-placeholder {
+  width: 100%;
+  aspect-ratio: 4/3;
+  border: 1px dashed rgba(0,229,255,0.2);
+  background: rgba(0,229,255,0.03);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  text-align: center;
+  padding: 0.5rem;
+}
+.enh-img-placeholder span {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  color: rgba(0,229,255,0.35);
+}
+.enh-img-placeholder small {
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  font-weight: 300;
+  line-height: 1.4;
+}
+.enh-img-placeholder--amber span { color: rgba(255,170,0,0.35); }
+
+/* ══════════════════════════════════════════
+   VIDEO SLOT
+══════════════════════════════════════════ */
+.enh-video-slot {
+  margin-top: 0.8rem;
+  border: 1px dashed rgba(0,229,255,0.2);
+  background: rgba(0,229,255,0.02);
+  aspect-ratio: 16/7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.enh-video-placeholder {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+.enh-video-icon {
+  font-size: 2rem;
+  color: rgba(0,229,255,0.25);
+  line-height: 1;
+}
+.enh-video-text {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  font-weight: 300;
+}
+.enh-video-sub {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  color: rgba(0,229,255,0.3);
+  text-transform: uppercase;
+}
+
+/* ══════════════════════════════════════════
+   IMAGE LIGHTBOX
+══════════════════════════════════════════ */
+.enh-lightbox-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: rgba(2,4,8,0.96);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.enh-lightbox-backdrop.is-open { opacity: 1; pointer-events: all; }
+.enh-lightbox-img {
+  max-width: 90vw;
+  max-height: 80vh;
+  border: 1px solid var(--border);
+  object-fit: contain;
+  transform: scale(0.95);
+  transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
+}
+.enh-lightbox-backdrop.is-open .enh-lightbox-img { transform: scale(1); }
+.enh-lightbox-close {
+  position: absolute;
+  top: 1.5rem; right: 1.5rem;
+  font-size: 1.4rem;
+  color: var(--text-dim);
+  background: none;
+  border: 1px solid var(--border);
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  line-height: 1;
+}
+.enh-lightbox-close:hover { color: var(--cyan); border-color: var(--cyan); }
+.enh-lightbox-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+/* ══════════════════════════════════════════
+   ACHIEVEMENT CARD cursor style
+══════════════════════════════════════════ */
+.ach-card { cursor: pointer; }
+
+/* ── CTA LINES ── */
+.cta-line {
+  color: var(--green) !important;
+  transition: color 0.2s, text-shadow 0.2s;
+}
+.cta-line:hover {
+  color: #00ff88 !important;
+  text-shadow: 0 0 12px rgba(0,255,136,0.5);
+}
+
+/* ── CARD HINT ── */
+.card-hint {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.22em;
+  color: var(--cyan);
+  opacity: 0.5;
+  text-transform: uppercase;
+  margin-top: 0.9rem;
+  transition: opacity 0.25s, color 0.25s;
+  user-select: none;
+}
+.patent-card:hover .card-hint,
+.project-card:hover .card-hint { opacity: 1; color: var(--cyan); }
+
+.card-hint--amber {
+  color: var(--amber);
+}
+.ach-card:hover .card-hint--amber { opacity: 1; color: var(--amber); }
+</style>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════
+   ENHANCEMENT MODULE v2 — Modals, Overlays, Media, Gallery Nav
+══════════════════════════════════════════════════════════════════ */
+(function(){
+
+/* ─────────────────────────────────────────
+   MEDIA SPEC REGISTRY — with real image paths & YouTube URLs
+───────────────────────────────────────── */
+const MEDIA_SPEC = {
+  AEGIS: {
+    images: ['AGIS/Ageis 1.jpg','AGIS/Ageis 2.jpg','AGIS/Ageis 3.jpg','AGIS/Ageis 4.jpeg'],
+    videoUrl: 'https://youtu.be/IdaQFdC5y1U'
+  },
+  AQUENTIS: {
+    images: ['AQUENTIS/Faucet 1.png','AQUENTIS/Faucet 2.png','AQUENTIS/Faucet 3.png','AQUENTIS/Faucet 4.png'],
+    videoUrl: 'https://youtu.be/jeXwt4xyf7E'
+  },
+  CITADEL: {
+    images: ['Citadel/Citadel 1.jpg','Citadel/Citadel 2.jpg','Citadel/Citadel 3.jpeg','Citadel/Citadel 4.jpeg'],
+    videoUrl: 'https://youtu.be/M4wBN8wIOCk'
+  },
+  MORPH: {
+    images: ['Morph/Morph 1.png','Morph/Morph 2.png','Morph/Morph 3.jpg','Morph/Morph 4.jpg'],
+    videoUrl: 'https://youtu.be/x7OhFV8o3pU'
+  },
+  PRANA: {
+    images: ['Prana/Prana 1.jpg','Prana/Prana 2.png','Prana/Prana 3.jpg','Prana/Prana 4.png'],
+    videoUrl: null
+  },
+  SIMA: {
+    images: [],
+    videoUrl: null
+  },
+  'SLPA-ZT': {
+    images: ['SLPA-ZT/Frame work.jpeg'],
+    videoUrl: 'https://youtu.be/de-ymzbl3hk'
+  },
+  UNIMOUNT: {
+    images: ['Unimount/uni1.png','Unimount/uni2.png','Unimount/uni 3.jpeg','Unimount/uni 4.jpeg'],
+    videoUrl: null
+  },
+  ZARVEX: {
+    images: ['Zarvex/zar1.jpg','Zarvex/zar 2.jpg','Zarvex/zar 3.jpg','Zarvex/zar 4.png'],
+    videoUrl: null
+  }
+};
+
+const ACH_MEDIA_SPEC = {
+  iaic:      { images: ['IAIC/IAIC 1.jpeg','IAIC/IAIC 2.jpeg','IAIC/IAIC3.jpeg','IAIC/IAIC 4.jpeg'] },
+  nokia:     { images: ['Nokia/Nokia 1.jpeg','Nokia/Nokia 2.jpeg'] },
+  ukinnovate:{ images: ['UK INNOVATE/uk 1.jpeg','UK INNOVATE/uk 2.jpeg','UK INNOVATE/uk 3.jpeg'] },
+  msme:      { images: [] },
+  sih:       { images: [] }
+};
+
+const PROJECT_DATA = {
+  homesecurity: {
+    title: 'Home Security System',
+    desc: 'Distributed smart security architecture integrating IR sensing, RFID authentication, and environmental monitoring. Real-time data uploaded to cloud for remote global access.',
+    images: ['other/Home security.jpeg'], videoUrl: null
+  },
+  remotecontrol: {
+    title: 'Custom Remote Controller',
+    desc: 'Low-latency robotic control system built on Raspberry Pi Pico for precise wireless control of MORPH, ZARVEX, and other rover platforms.',
+    images: ['other/Remote.jpeg'], videoUrl: null
+  },
+  smartclassroom: {
+    title: 'Intelligent Attendance & Smart Classroom',
+    desc: 'Automated classroom system activating attendance logging on teacher presence detection. Multi-sensor integration with custom web dashboard for real-time analytics.',
+    images: [], videoUrl: 'https://youtu.be/mfEHy2sF-Ys'
+  },
+  multirover: {
+    title: 'Multi-Rover Systems',
+    desc: 'Collection of autonomous and semi-autonomous robotic platforms for surveillance, monitoring, line following, and human tracking across real-world deployment scenarios.',
+    images: ['other/Rover 1.jpeg','other/Rover 2.jpeg','other/Rover 3.jpeg'],
+    videoUrl: 'https://youtu.be/7zuoh_807Zk',
+    extraVideoUrl: 'https://youtu.be/-3AW9n2i77s'
+  }
+};
+
+/* ─────────────────────────────────────────
+   PATENT DATA REGISTRY
+───────────────────────────────────────── */
+const PATENT_DATA = {
+  MORPH: {
+    name: 'Modular Multi-Application Rover', status: 'Patent Filed · 2025', domain: 'Robotics',
+    problem: 'Robotic platforms are typically designed for a single specialized task, making cross-domain deployment difficult and requiring separate hardware systems for different operational environments.',
+    solution: 'Modular AI-enabled autonomous rover platform with hot-swappable pogo-pin sensor modules and distributed microcontroller architecture enabling rapid multi-domain deployment.'
+  },
+  ZARVEX: {
+    name: 'Zero-Tilt Aerial Recon System', status: 'Patent Filed · 2025', domain: 'Autonomous UAV Systems',
+    problem: 'Conventional UAVs often rely on structural tilt or fixed rotor configurations for directional control, reducing observation stability and limiting precision during surveillance tasks.',
+    solution: 'Zero-tilt UAV architecture using independently vectored propellers and AI-based IMU stabilization for high-precision aerial surveillance.'
+  },
+  PRANA: {
+    name: 'Precision Agriculture Rover', status: 'Patent Filed · 2025', domain: 'Agricultural Robotics',
+    problem: 'Most agricultural robotic systems are designed for single-purpose tasks, forcing farmers to deploy multiple machines to perform different field operations.',
+    solution: 'AI-driven autonomous agriculture rover integrating adaptive spraying, hybrid weed control, and closed-loop soil analytics in a single platform.'
+  },
+  CITADEL: {
+    name: 'Emergency Communication Mesh System', status: 'Patent Filed · 2026', domain: 'Distributed Communication Systems',
+    problem: 'Emergency communication in remote environments often fails due to unreliable connectivity, limited battery resources, and dependence on single communication channels.',
+    solution: 'Wearable emergency communication platform with multi-bearer routing across LoRa, LTE-M, and BLE networks for resilient infrastructure-free operation.'
+  },
+  UNIMOUNT: {
+    name: 'Universal Intelligent Modular Hardware Platform', status: 'Patent Filed · 2026', domain: 'Embedded Systems',
+    problem: 'Most embedded systems are tightly coupled to a specific application, requiring full system replacement when operational requirements change.',
+    solution: 'Universal embedded hardware platform enabling automatic application switching using passive hardware cartridges for adaptive deployment.'
+  },
+  'SLPA-ZT': {
+    name: 'Self-Learning Priority-Aware Zero-Trust Mesh', status: 'Patent Filed · 2026', domain: 'Communication Protocols',
+    problem: 'Existing wireless mesh systems often struggle with reliability, energy efficiency, and secure communication in infrastructure-less environments.',
+    solution: 'Self-learning zero-trust wireless mesh framework designed for reliable communication among energy-constrained devices without fixed infrastructure.'
+  },
+  SIMA: {
+    name: 'State-Shifted Immutable Mesh Architecture', status: 'Patent Filed · 2026', domain: 'Network Architecture',
+    problem: 'Traditional communication protocols modify data packets as they traverse networks, increasing complexity and reducing efficiency in heterogeneous communication environments.',
+    solution: 'Wireless communication architecture enabling immutable packet propagation across heterogeneous networks for streamlined cross-system communication.'
+  },
+  AQUENTIS: {
+    name: 'Intelligent Water Dispensing System', status: 'Patent Filed · 2026', domain: 'Smart Infrastructure',
+    problem: 'Traditional water faucets regulate only flow and do not account for real-time water quality conditions during usage.',
+    solution: 'Smart faucet system integrating sensor-driven monitoring and adaptive flow control for intelligent real-time water quality management.'
+  },
+  AEGIS: {
+    name: 'Adaptive Enclave-Guided Institutional Sentinel', status: 'Patent Filed · 2026', domain: 'Intelligent Surveillance Systems',
+    problem: 'Conventional institutional attendance and identity verification systems rely on manual processes, static camera systems, or basic biometric devices, remaining vulnerable to proxy attendance, spoofing attempts, and privacy concerns.',
+    solution: 'Adaptive edge-AI surveillance system integrating recognition-guided optical actuation and secure biometric processing for privacy-preserving attendance auditing.'
+  }
+};
+
+const ACH_DATA = {
+  nokia:     { rank: '01', badge: '// WINNER',    title: 'Nokia Campus Connect',        desc: 'First-place recognition in Nokia\'s campus innovation challenge. Technology and systems design competition.' },
+  iaic:      { rank: '02', badge: '// 2ND PRIZE', title: 'IAIC Recognition',             desc: 'Second prize at the India Artificial Intelligence Championship, recognizing applied AI and hardware innovation.' },
+  msme:      { rank: '03', badge: '// SELECTED',  title: 'MSME Hackathon',               desc: 'Selected participant in MSME national hackathon, contributing systems engineering solutions for industry-level challenges.' },
+  sih:       { rank: '04', badge: '// TOP 500',   title: 'Smart India Hackathon (SIH)',  desc: 'Selected among the Top 500 teams nationally for our problem statement. Served as team leader, guiding system design, development strategy, and project execution.' },
+  ukinnovate:{ rank: '05', badge: '// PRESENTER', title: 'UK Innovate Presenter',        desc: 'International presenter at UK Innovate — presenting advanced engineering research and patent systems to a global innovation audience.' }
+};
+
+/* ─────────────────────────────────────────
+   MEDIA HTML BUILDER
+───────────────────────────────────────── */
+function buildMediaHTML(images, videoUrls, isAmber) {
+  var html = '';
+  var accentClass = isAmber ? ' amber-style' : '';
+  images = images || [];
+  videoUrls = videoUrls || [];
+
+  if (images.length > 0) {
+    var cols = images.length === 1 ? 'cols-1' : images.length === 2 ? 'cols-2' : images.length === 3 ? 'cols-3' : 'cols-4';
+    html += '<div class="enh-media-section">';
+    html += '<div class="enh-section-label">// SYSTEM VISUALS</div>';
+    html += '<div class="enh-img-grid-auto ' + cols + '">';
+    for (var i = 0; i < images.length; i++) {
+      html += '<div class="enh-media-thumb' + accentClass + '" data-idx="' + i + '" data-src="' + images[i] + '">';
+      html += '<img src="' + images[i] + '" alt="Photo ' + (i+1) + '" loading="lazy" onerror="this.parentNode.innerHTML=\'<div class=thumb-placeholder><span>IMG_0' + (i+1) + '</span><small>Image not found</small></div>\'">';
+      html += '</div>';
+    }
+    html += '</div></div>';
+  }
+
+  for (var v = 0; v < videoUrls.length; v++) {
+    var url = videoUrls[v];
+    var videoId = url.replace('https://youtu.be/','').split('?')[0];
+    var embedUrl = 'https://www.youtube.com/embed/' + videoId;
+    html += '<div class="enh-media-section">';
+    html += '<div class="enh-section-label">// VIDEO DEMONSTRATION' + (videoUrls.length > 1 ? ' ' + (v+1) : '') + '</div>';
+    html += '<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border:1px solid var(--border);">';
+    html += '<iframe src="' + embedUrl + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;top:0;left:0;width:100%;height:100%;"></iframe>';
+    html += '</div></div>';
+  }
+
+  return html || '<div class="enh-section-label" style="margin-top:1rem;opacity:0.5;">// NO MEDIA ATTACHED</div>';
+}
+
+/* ─────────────────────────────────────────
+   GALLERY LIGHTBOX STATE
+───────────────────────────────────────── */
+var galleryItems = [];  // {type:'img'|'video', src:'', label:''}
+var galleryIndex = 0;
+
+var lightbox = document.getElementById('imgLightbox');
+
+function buildLightboxHTML() {
+  lightbox.innerHTML =
+    '<button class="enh-lightbox-close" id="lightboxClose">&#x2715;</button>' +
+    '<div class="enh-lightbox-media-wrap" id="lbMediaWrap">' +
+      '<button class="enh-lightbox-nav prev" id="lbPrev">&#8592;</button>' +
+      '<div id="lbMediaContent"></div>' +
+      '<button class="enh-lightbox-nav next" id="lbNext">&#8594;</button>' +
+    '</div>' +
+    '<div class="enh-lightbox-label" id="lbLabel"></div>' +
+    '<div class="enh-lightbox-counter" id="lbCounter"></div>';
+
+  document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+  document.getElementById('lbPrev').addEventListener('click', function(e){ e.stopPropagation(); navigateGallery(-1); });
+  document.getElementById('lbNext').addEventListener('click', function(e){ e.stopPropagation(); navigateGallery(1); });
+  lightbox.addEventListener('click', function(e){ if(e.target === lightbox) closeLightbox(); });
+}
+
+function openLightboxAt(items, idx) {
+  galleryItems = items;
+  galleryIndex = idx;
+  buildLightboxHTML();
+  renderLightboxItem();
+  lightbox.classList.add('is-open');
+  lightbox.setAttribute('aria-hidden','false');
+  document.body.style.overflow = 'hidden';
+}
+
+function renderLightboxItem() {
+  var item = galleryItems[galleryIndex];
+  var content = document.getElementById('lbMediaContent');
+  var label = document.getElementById('lbLabel');
+  var counter = document.getElementById('lbCounter');
+  var navPrev = document.getElementById('lbPrev');
+  var navNext = document.getElementById('lbNext');
+
+  navPrev.style.display = galleryItems.length > 1 ? '' : 'none';
+  navNext.style.display = galleryItems.length > 1 ? '' : 'none';
+  counter.textContent = galleryItems.length > 1 ? (galleryIndex+1) + ' / ' + galleryItems.length : '';
+
+  if (item.type === 'img') {
+    content.innerHTML = '<img class="enh-lightbox-img" src="' + (item.src||'') + '" alt="' + (item.label||'') + '">';
+    label.textContent = item.label || '';
+  } else {
+    content.innerHTML = '<div class="enh-video-block-inner" style="padding:2rem;border:1px solid var(--border);background:rgba(2,4,8,0.9);min-width:320px;">' +
+      '<div class="enh-video-play-icon" style="margin:0 auto;">&#9654;</div>' +
+      '<div class="enh-video-block-text" style="margin-top:0.8rem;">Video will be available when source is linked.</div>' +
+      '<div class="enh-video-block-sub">YouTube embed · Source to be added</div></div>';
+    label.textContent = item.label || 'Video Demo';
+  }
+}
+
+function navigateGallery(dir) {
+  galleryIndex = (galleryIndex + dir + galleryItems.length) % galleryItems.length;
+  renderLightboxItem();
+}
+
+function closeLightbox() {
+  lightbox.classList.remove('is-open');
+  lightbox.setAttribute('aria-hidden','true');
+  document.body.style.overflow = '';
+}
+
+/* ─────────────────────────────────────────
+   ATTACH MEDIA CLICK HANDLERS
+───────────────────────────────────────── */
+function attachMediaHandlers(container) {
+  var thumbs = container.querySelectorAll('.enh-media-thumb');
+  var items = [];
+
+  thumbs.forEach(function(t, i) {
+    var src = t.getAttribute('data-src') || '';
+    items.push({ type: 'img', src: src, label: 'Photo ' + (i+1) });
+    (function(idx){ t.addEventListener('click', function() { openLightboxAt(items, idx); }); })(i);
+  });
+}
+
+/* ─────────────────────────────────────────
+   PATENT MODAL
+───────────────────────────────────────── */
+var patentBackdrop = document.getElementById('patentModal');
+var patentClose    = document.getElementById('patentModalClose');
+
+function openPatentModal(id) {
+  var d = PATENT_DATA[id];
+  if (!d) return;
+  document.getElementById('pm-eyebrow').textContent  = '// ' + d.domain.toUpperCase() + ' · PATENT SYSTEM';
+  document.getElementById('pm-code').textContent     = id;
+  document.getElementById('pm-name').textContent     = d.name;
+  document.getElementById('pm-status').textContent   = d.status;
+  document.getElementById('pm-problem').textContent  = d.problem;
+  document.getElementById('pm-solution').textContent = d.solution;
+
+  var spec = MEDIA_SPEC[id] || { images: [], videoUrl: null };
+  var videoUrls = spec.videoUrl ? [spec.videoUrl] : [];
+  var container = document.getElementById('pm-media-container');
+  container.innerHTML = buildMediaHTML(spec.images, videoUrls, false);
+  attachMediaHandlers(container);
+
+  patentBackdrop.setAttribute('aria-hidden','false');
+  patentBackdrop.classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePatentModal() {
+  patentBackdrop.classList.remove('is-open');
+  patentBackdrop.setAttribute('aria-hidden','true');
+  document.body.style.overflow = '';
+}
+
+document.querySelectorAll('.patent-card[data-patent]').forEach(function(card) {
+  card.addEventListener('click', function() { openPatentModal(card.dataset.patent); });
+});
+patentClose.addEventListener('click', closePatentModal);
+patentBackdrop.addEventListener('click', function(e) { if (e.target === patentBackdrop) closePatentModal(); });
+
+/* ─────────────────────────────────────────
+   ACHIEVEMENT MODAL
+───────────────────────────────────────── */
+var achBackdrop = document.getElementById('achModal');
+var achClose    = document.getElementById('achModalClose');
+
+function openAchModal(id) {
+  var d = ACH_DATA[id];
+  if (!d) return;
+  document.getElementById('am-rank').textContent  = d.rank;
+  document.getElementById('am-title').textContent = d.title;
+  document.getElementById('am-badge').textContent = d.badge;
+  document.getElementById('am-desc').textContent  = d.desc;
+
+  var spec = ACH_MEDIA_SPEC[id] || { images: [] };
+  var container = document.getElementById('am-media-container');
+  if (spec.images && spec.images.length > 0) {
+    container.innerHTML = buildMediaHTML(spec.images, [], true);
+    attachMediaHandlers(container);
+  } else {
+    container.innerHTML = '';
+  }
+
+  achBackdrop.setAttribute('aria-hidden','false');
+  achBackdrop.classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeAchModal() {
+  achBackdrop.classList.remove('is-open');
+  achBackdrop.setAttribute('aria-hidden','true');
+  document.body.style.overflow = '';
+}
+
+document.querySelectorAll('.ach-card[data-ach]').forEach(function(card) {
+  card.addEventListener('click', function() { openAchModal(card.dataset.ach); });
+});
+achClose.addEventListener('click', closeAchModal);
+achBackdrop.addEventListener('click', function(e) { if (e.target === achBackdrop) closeAchModal(); });
+
+/* ─────────────────────────────────────────
+   OTHER PROJECTS MODAL
+───────────────────────────────────────── */
+var projBackdrop = document.getElementById('projModal');
+var projClose    = document.getElementById('projModalClose');
+
+function openProjModal(id) {
+  var d = PROJECT_DATA[id];
+  if (!d) return;
+  document.getElementById('proj-eyebrow').textContent   = '// AUXILIARY SYSTEM';
+  document.getElementById('proj-code').textContent      = d.title;
+  document.getElementById('proj-desc-text').textContent = d.desc;
+
+  var container = document.getElementById('proj-media-container');
+  var videoUrls = [];
+  if (d.videoUrl) videoUrls.push(d.videoUrl);
+  if (d.extraVideoUrl) videoUrls.push(d.extraVideoUrl);
+  container.innerHTML = buildMediaHTML(d.images || [], videoUrls, false);
+  attachMediaHandlers(container);
+
+  projBackdrop.setAttribute('aria-hidden','false');
+  projBackdrop.classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeProjModal() {
+  projBackdrop.classList.remove('is-open');
+  projBackdrop.setAttribute('aria-hidden','true');
+  document.body.style.overflow = '';
+}
+
+document.querySelectorAll('[data-project]').forEach(function(card) {
+  card.addEventListener('click', function() { openProjModal(card.dataset.project); });
+});
+projClose.addEventListener('click', closeProjModal);
+projBackdrop.addEventListener('click', function(e) { if (e.target === projBackdrop) closeProjModal(); });
+
+/* ─────────────────────────────────────────
+   PATENT CARD HOVER OVERLAYS
+───────────────────────────────────────── */
+var OVERLAY_RENDERERS = {
+  MORPH: drawOverlayMORPH,
+  ZARVEX: drawOverlayZARVEX,
+  PRANA: drawOverlayPRANA,
+  CITADEL: drawOverlayCITADEL,
+  UNIMOUNT: drawOverlayUNIMOUNT,
+  'SLPA-ZT': drawOverlaySLPA,
+  SIMA: drawOverlaySIMA,
+  AQUENTIS: drawOverlayAQUENTIS,
+  AEGIS: drawOverlayAEGIS
+};
+
+document.querySelectorAll('.patent-card[data-patent]').forEach(function(card) {
+  var id = card.dataset.patent;
+  var cvs = document.createElement('canvas');
+  cvs.className = 'card-overlay-canvas';
+  card.insertBefore(cvs, card.firstChild);
+  var state = { active: false, t: 0, raf: null };
+
+  function tick() {
+    var rect = card.getBoundingClientRect();
+    cvs.width = rect.width || cvs.offsetWidth;
+    cvs.height = rect.height || cvs.offsetHeight;
+    var ctx = cvs.getContext('2d');
+    ctx.clearRect(0, 0, cvs.width, cvs.height);
+    state.t += 0.018;
+    var renderer = OVERLAY_RENDERERS[id];
+    if (renderer) renderer(ctx, cvs.width, cvs.height, state.t);
+    state.raf = requestAnimationFrame(tick);
+  }
+
+  card.addEventListener('mouseenter', function() {
+    state.active = true;
+    if (!state.raf) tick();
+  });
+  card.addEventListener('mouseleave', function() {
+    state.active = false;
+    if (state.raf) { cancelAnimationFrame(state.raf); state.raf = null; }
+    var ctx = cvs.getContext('2d');
+    ctx.clearRect(0, 0, cvs.width, cvs.height);
+  });
+});
+
+/* ─────────────────────────────────────────
+   OVERLAY RENDERERS
+───────────────────────────────────────── */
+function drawOverlayMORPH(ctx, w, h, t) {
+  ctx.save();
+  var modules = [{x:0.1,y:0.3,w:0.18,h:0.12},{x:0.32,y:0.3,w:0.18,h:0.12},{x:0.54,y:0.3,w:0.18,h:0.12},{x:0.76,y:0.3,w:0.18,h:0.12},{x:0.21,y:0.55,w:0.18,h:0.12},{x:0.43,y:0.55,w:0.18,h:0.12},{x:0.65,y:0.55,w:0.18,h:0.12}];
+  modules.forEach(function(m, i) {
+    var phase = (Math.sin(t + i * 0.9) + 1) / 2;
+    ctx.strokeStyle = 'rgba(0,229,255,'+(0.08+phase*0.18)+')'; ctx.lineWidth=1;
+    ctx.strokeRect(m.x*w,m.y*h,m.w*w,m.h*h);
+    ctx.fillStyle='rgba(0,229,255,'+(0.02+phase*0.06)+')'; ctx.fillRect(m.x*w,m.y*h,m.w*w,m.h*h);
+    for(var p=0;p<3;p++){ctx.beginPath();ctx.arc((m.x+0.04+p*0.05)*w,(m.y+m.h/2)*h,2,0,Math.PI*2);ctx.fillStyle='rgba(0,255,136,'+(0.1+phase*0.3)+')';ctx.fill();}
+  });
+  ctx.restore();
+}
+function drawOverlayZARVEX(ctx, w, h, t) {
+  ctx.save();
+  var cx=w*0.5,cy=h*0.5;
+  for(var r=0;r<4;r++){var radius=(0.12+r*0.1)*Math.min(w,h);var alpha=(Math.sin(t*0.8+r*1.2)+1)/2*0.15;ctx.beginPath();ctx.arc(cx,cy,radius,0,Math.PI*2);ctx.strokeStyle='rgba(0,229,255,'+(0.05+alpha)+')';ctx.lineWidth=r===0?1.5:1;ctx.stroke();}
+  var size=0.06*Math.min(w,h);ctx.strokeStyle='rgba(0,255,136,'+(0.12+Math.sin(t)*0.06)+')';ctx.lineWidth=0.8;
+  ctx.beginPath();ctx.moveTo(cx-size,cy);ctx.lineTo(cx+size,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy-size);ctx.lineTo(cx,cy+size);ctx.stroke();
+  ctx.restore();
+}
+function drawOverlayPRANA(ctx, w, h, t) {
+  ctx.save();
+  var cx=w*0.5,cy=h*0.72,startAngle=Math.PI+(t%(Math.PI*2))*0.5-Math.PI*0.6,sweepAngle=Math.PI*0.5;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,w*0.4,startAngle,startAngle+sweepAngle);ctx.closePath();ctx.fillStyle='rgba(0,255,136,0.04)';ctx.fill();
+  ctx.beginPath();ctx.arc(cx,cy,w*0.4,startAngle,startAngle+sweepAngle);ctx.strokeStyle='rgba(0,255,136,0.18)';ctx.lineWidth=1;ctx.stroke();
+  var se=startAngle+sweepAngle;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(se)*w*0.4,cy+Math.sin(se)*w*0.4);ctx.strokeStyle='rgba(0,255,136,0.4)';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.restore();
+}
+function drawOverlayCITADEL(ctx, w, h, t) {
+  ctx.save();
+  var nodes=[{x:0.15,y:0.25},{x:0.5,y:0.15},{x:0.85,y:0.25},{x:0.1,y:0.7},{x:0.5,y:0.82},{x:0.9,y:0.7}];
+  var links=[[0,1],[1,2],[0,3],[1,4],[2,5],[3,4],[4,5],[0,2],[3,5]];
+  links.forEach(function(l,i){var phase=(Math.sin(t*1.2+i*0.7)+1)/2;ctx.beginPath();ctx.moveTo(nodes[l[0]].x*w,nodes[l[0]].y*h);ctx.lineTo(nodes[l[1]].x*w,nodes[l[1]].y*h);ctx.strokeStyle='rgba(0,229,255,'+(0.04+phase*0.12)+')';ctx.lineWidth=0.8;ctx.stroke();var pf=(t*0.4+i*0.15)%1;var px=(nodes[l[0]].x+(nodes[l[1]].x-nodes[l[0]].x)*pf)*w,py=(nodes[l[0]].y+(nodes[l[1]].y-nodes[l[0]].y)*pf)*h;ctx.beginPath();ctx.arc(px,py,2.5,0,Math.PI*2);ctx.fillStyle='rgba(0,255,136,'+(0.3+phase*0.4)+')';ctx.fill();});
+  nodes.forEach(function(n,i){var pulse=(Math.sin(t*1.5+i)+1)/2;ctx.beginPath();ctx.arc(n.x*w,n.y*h,3+pulse*2,0,Math.PI*2);ctx.fillStyle='rgba(0,229,255,'+(0.12+pulse*0.15)+')';ctx.fill();ctx.strokeStyle='rgba(0,229,255,0.35)';ctx.lineWidth=1;ctx.stroke();});
+  ctx.restore();
+}
+function drawOverlayUNIMOUNT(ctx, w, h, t) {
+  ctx.save();
+  var slots=[{x:0.08,y:0.2,w:0.84,h:0.14},{x:0.08,y:0.38,w:0.84,h:0.14},{x:0.08,y:0.56,w:0.84,h:0.14},{x:0.08,y:0.74,w:0.84,h:0.14}];
+  var active=Math.floor((t/(Math.PI*2)*2)%slots.length);
+  slots.forEach(function(s,i){var isActive=i===active;ctx.fillStyle='rgba(0,229,255,'+(isActive?0.15:0.04)+')';ctx.fillRect(s.x*w,s.y*h,s.w*w,s.h*h);ctx.strokeStyle='rgba(0,229,255,'+(isActive?0.4:0.1)+')';ctx.lineWidth=isActive?1.5:0.8;ctx.strokeRect(s.x*w,s.y*h,s.w*w,s.h*h);for(var p=0;p<6;p++){ctx.beginPath();ctx.rect((s.x+0.05+p*0.13)*w,(s.y+0.02)*h,0.04*w,s.h*h*0.4);ctx.fillStyle='rgba(0,255,136,'+(isActive?0.4:0.1)+')';ctx.fill();}});
+  ctx.restore();
+}
+function drawOverlaySLPA(ctx, w, h, t) {
+  ctx.save();
+  var nodes=[{x:0.2,y:0.2},{x:0.5,y:0.12},{x:0.8,y:0.2},{x:0.12,y:0.6},{x:0.5,y:0.5},{x:0.88,y:0.6},{x:0.3,y:0.85},{x:0.7,y:0.85}];
+  nodes.forEach(function(a,i){nodes.forEach(function(b,j){if(j<=i)return;var dx=(a.x-b.x)*w,dy=(a.y-b.y)*h;if(Math.sqrt(dx*dx+dy*dy)>w*0.45)return;var phase=(Math.sin(t*0.8+i*0.4+j*0.3)+1)/2;ctx.beginPath();ctx.moveTo(a.x*w,a.y*h);ctx.lineTo(b.x*w,b.y*h);ctx.strokeStyle='rgba(0,229,255,'+(0.04+phase*0.1)+')';ctx.lineWidth=0.8;ctx.stroke();});});
+  nodes.forEach(function(n,i){var p=(Math.sin(t*1.2+i*0.8)+1)/2;ctx.beginPath();ctx.arc(n.x*w,n.y*h,4+p*3,0,Math.PI*2);ctx.fillStyle='rgba(0,229,255,0.08)';ctx.fill();ctx.strokeStyle='rgba(0,229,255,'+(0.25+p*0.25)+')';ctx.lineWidth=1.2;ctx.stroke();ctx.beginPath();ctx.arc(n.x*w,n.y*h,1.5,0,Math.PI*2);ctx.fillStyle='rgba(0,255,136,'+(0.3+p*0.4)+')';ctx.fill();});
+  ctx.restore();
+}
+function drawOverlaySIMA(ctx, w, h, t) {
+  ctx.save();
+  var tracks=[0.25,0.45,0.65,0.82];
+  tracks.forEach(function(y,ti){ctx.beginPath();ctx.moveTo(0,y*h);ctx.lineTo(w,y*h);ctx.strokeStyle='rgba(0,229,255,0.07)';ctx.lineWidth=1;ctx.stroke();for(var p=0;p<3;p++){var offset=(t*0.25+ti*0.4+p*0.33)%1;var px=offset*w;var alpha=Math.sin(offset*Math.PI)*0.55;ctx.fillStyle='rgba(0,229,255,'+(alpha*0.15)+')';ctx.fillRect(px-8,y*h-6,16,12);ctx.strokeStyle='rgba(0,229,255,'+(alpha*0.6)+')';ctx.lineWidth=0.8;ctx.strokeRect(px-8,y*h-6,16,12);ctx.beginPath();ctx.moveTo(px+10,y*h);ctx.lineTo(px+6,y*h-3);ctx.lineTo(px+6,y*h+3);ctx.closePath();ctx.fillStyle='rgba(0,229,255,'+(alpha*0.5)+')';ctx.fill();}});
+  ctx.restore();
+}
+function drawOverlayAQUENTIS(ctx, w, h, t) {
+  ctx.save();
+  var cx=w*0.5,cy=h*0.45;
+  for(var r=0;r<5;r++){var phase=((t*0.6+r*0.4)%(Math.PI*2));var radius=(0.05+(phase/(Math.PI*2))*0.45)*Math.min(w,h);var alpha=(1-phase/(Math.PI*2))*0.2;ctx.beginPath();ctx.arc(cx,cy,radius,0,Math.PI*2);ctx.strokeStyle='rgba(0,229,255,'+alpha+')';ctx.lineWidth=1.2;ctx.stroke();}
+  ctx.beginPath();ctx.arc(cx,cy,4,0,Math.PI*2);ctx.fillStyle='rgba(0,255,136,0.5)';ctx.fill();
+  ctx.beginPath();ctx.arc(cx,cy,8,0,Math.PI*2);ctx.strokeStyle='rgba(0,255,136,0.2)';ctx.lineWidth=1;ctx.stroke();
+  ctx.restore();
+}
+function drawOverlayAEGIS(ctx, w, h, t) {
+  ctx.save();
+  var cx=w*0.5,cy=h*0.1,coneAngle=Math.PI*0.38,coneLen=h*0.8,sweep=coneAngle*0.5*Math.sin(t*0.9);
+  var leftAngle=Math.PI*0.5-coneAngle*0.5,rightAngle=Math.PI*0.5+coneAngle*0.5;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,coneLen,leftAngle,rightAngle);ctx.closePath();ctx.fillStyle='rgba(0,229,255,0.03)';ctx.fill();
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(leftAngle)*coneLen,cy+Math.sin(leftAngle)*coneLen);ctx.strokeStyle='rgba(0,229,255,0.18)';ctx.lineWidth=1;ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(rightAngle)*coneLen,cy+Math.sin(rightAngle)*coneLen);ctx.stroke();
+  var sweepAngle=Math.PI*0.5+sweep;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(sweepAngle)*coneLen,cy+Math.sin(sweepAngle)*coneLen);ctx.strokeStyle='rgba(0,229,255,0.45)';ctx.lineWidth=1.2;ctx.stroke();
+  var boxAlpha=(Math.sin(t*1.4)+1)/2,bx=w*0.32,by=h*0.48,bw=w*0.36,bh=h*0.28;
+  ctx.strokeStyle='rgba(0,255,136,'+(0.15+boxAlpha*0.35)+')';ctx.lineWidth=1.2;ctx.strokeRect(bx,by,bw,bh);
+  [[bx,by],[bx+bw,by],[bx,by+bh],[bx+bw,by+bh]].forEach(function(pt){var sx=pt[0]===bx?1:-1,sy=pt[1]===by?1:-1;ctx.strokeStyle='rgba(0,255,136,'+(0.4+boxAlpha*0.4)+')';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(pt[0],pt[1]);ctx.lineTo(pt[0]+sx*8,pt[1]);ctx.stroke();ctx.beginPath();ctx.moveTo(pt[0],pt[1]);ctx.lineTo(pt[0],pt[1]+sy*8);ctx.stroke();});
+  ctx.font='7px Share Tech Mono';ctx.fillStyle='rgba(0,255,136,'+(0.3+boxAlpha*0.5)+')';ctx.fillText('ID:MATCH',bx+3,by-4);
+  ctx.beginPath();ctx.arc(cx,cy,4,0,Math.PI*2);ctx.fillStyle='rgba(0,229,255,0.6)';ctx.fill();
+  ctx.restore();
+}
+
+/* ─────────────────────────────────────────
+   KEYBOARD ESC
+───────────────────────────────────────── */
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Escape') return;
+  if (lightbox.classList.contains('is-open'))            closeLightbox();
+  else if (patentBackdrop.classList.contains('is-open')) closePatentModal();
+  else if (achBackdrop.classList.contains('is-open'))    closeAchModal();
+  else if (projBackdrop.classList.contains('is-open'))   closeProjModal();
+});
+
+/* ─────────────────────────────────────────
+   KEYBOARD ARROW NAV IN LIGHTBOX
+───────────────────────────────────────── */
+document.addEventListener('keydown', function(e) {
+  if (!lightbox.classList.contains('is-open')) return;
+  if (e.key === 'ArrowRight') navigateGallery(1);
+  if (e.key === 'ArrowLeft')  navigateGallery(-1);
+});
+
+})(); // end enhancement module
+</script>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">Ritam Pandey · Research Lab</div>
+  <div class="footer-copy">© 2025–2026 · All Patents Filed</div>
+  <div class="footer-status">Systems Online</div>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+  // ——— CURSOR ———
+  const cursor = document.getElementById('cursor');
+  const ring   = document.getElementById('cursorRing');
+  if (cursor && ring) {
+    let mx=0,my=0,rx=0,ry=0;
+    document.addEventListener('mousemove', e => {
+      mx=e.clientX; my=e.clientY;
+      cursor.style.left=mx+'px'; cursor.style.top=my+'px';
+    });
+    (function animRing(){
+      rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12;
+      ring.style.left=rx+'px'; ring.style.top=ry+'px';
+      requestAnimationFrame(animRing);
+    })();
+    document.querySelectorAll('a,.btn,.patent-card,.project-card,.ach-card,.ep-item,.research-card').forEach(el => {
+      el.addEventListener('mouseenter', () => { ring.style.width='56px'; ring.style.height='56px'; ring.style.opacity='0.8'; });
+      el.addEventListener('mouseleave', () => { ring.style.width='36px'; ring.style.height='36px'; ring.style.opacity='0.5'; });
+    });
+  }
+
+  // ——— PROGRESS BAR ———
+  const bar = document.getElementById('progressBar');
+  if (bar) {
+    window.addEventListener('scroll', () => {
+      const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+      bar.style.width = pct + '%';
+    });
+  }
+
+  // ——— COUNTER ANIMATION ———
+  function animCounter(el, target, duration) {
+    if (!el) return;
+    duration = duration || 1600;
+    let start = 0;
+    const step = target / duration * 16;
+    const timer = setInterval(function() {
+      start = Math.min(start + step, target);
+      el.textContent = Math.floor(start);
+      if (start >= target) clearInterval(timer);
+    }, 16);
+  }
+  setTimeout(function(){ animCounter(document.getElementById('patentCounter'), 9); }, 1200);
+
+  // ——— BACKGROUND CANVAS — PCB TRACES ———
+  const bgCanvas = document.getElementById('bgCanvas');
+  if (bgCanvas) {
+    const bgCtx = bgCanvas.getContext('2d');
+    function resizeBg() { bgCanvas.width=window.innerWidth; bgCanvas.height=window.innerHeight; }
+    resizeBg();
+    window.addEventListener('resize', resizeBg);
+    const bgNodes = [];
+    for (let i=0; i<18; i++) {
+      bgNodes.push({
+        x: Math.random()*window.innerWidth,
+        y: Math.random()*window.innerHeight,
+        vx: (Math.random()-0.5)*0.3,
+        vy: (Math.random()-0.5)*0.3
+      });
+    }
+    function drawBg() {
+      bgCtx.clearRect(0,0,bgCanvas.width,bgCanvas.height);
+      bgNodes.forEach(function(n) {
+        n.x+=n.vx; n.y+=n.vy;
+        if(n.x<0||n.x>bgCanvas.width)  n.vx*=-1;
+        if(n.y<0||n.y>bgCanvas.height) n.vy*=-1;
+      });
+      for (let i=0; i<bgNodes.length; i++) {
+        for (let j=i+1; j<bgNodes.length; j++) {
+          const dx=bgNodes[i].x-bgNodes[j].x, dy=bgNodes[i].y-bgNodes[j].y;
+          const dist=Math.sqrt(dx*dx+dy*dy);
+          if (dist<220) {
+            bgCtx.beginPath();
+            bgCtx.moveTo(bgNodes[i].x,bgNodes[i].y);
+            bgCtx.lineTo(bgNodes[j].x,bgNodes[j].y);
+            bgCtx.strokeStyle='rgba(0,229,255,'+(1-dist/220)*0.04+')';
+            bgCtx.lineWidth=1; bgCtx.stroke();
+          }
+        }
+      }
+      bgNodes.forEach(function(n) {
+        bgCtx.beginPath(); bgCtx.arc(n.x,n.y,2,0,Math.PI*2);
+        bgCtx.fillStyle='rgba(0,229,255,0.25)'; bgCtx.fill();
+      });
+      requestAnimationFrame(drawBg);
+    }
+    drawBg();
+  }
+
+  // ——— MESH CANVAS ———
+  const mesh = document.getElementById('meshCanvas');
+  if (mesh) {
+    const mCtx = mesh.getContext('2d');
+    function resizeMesh() { mesh.width=mesh.offsetWidth||600; mesh.height=mesh.offsetHeight||300; }
+    resizeMesh();
+    window.addEventListener('resize', resizeMesh);
+    const mnodes = [];
+    for (let i=0; i<12; i++) {
+      mnodes.push({
+        x: 40+Math.random()*((mesh.width||600)-80),
+        y: 30+Math.random()*((mesh.height||300)-60),
+        vx: (Math.random()-0.5)*0.5,
+        vy: (Math.random()-0.5)*0.5,
+        type: i<4?'gateway':i<8?'relay':'edge',
+        pulse: Math.random()*Math.PI*2
+      });
+    }
+    const mpackets = [];
+    function spawnPacket() {
+      if (mnodes.length<2) return;
+      const from=Math.floor(Math.random()*mnodes.length);
+      let to;
+      do { to=Math.floor(Math.random()*mnodes.length); } while(to===from);
+      mpackets.push({from:from, to:to, t:0, speed:0.008+Math.random()*0.006, color:Math.random()<0.4?'#00ff88':'#00e5ff'});
+    }
+    setInterval(spawnPacket, 800);
+    function drawMesh() {
+      if (!mesh.offsetWidth) { requestAnimationFrame(drawMesh); return; }
+      if (mesh.width!==mesh.offsetWidth) { mesh.width=mesh.offsetWidth; mesh.height=mesh.offsetHeight||300; }
+      mCtx.clearRect(0,0,mesh.width,mesh.height);
+      mCtx.fillStyle='rgba(5,13,26,0.3)'; mCtx.fillRect(0,0,mesh.width,mesh.height);
+      mnodes.forEach(function(n) {
+        n.x+=n.vx; n.y+=n.vy; n.pulse+=0.03;
+        if(n.x<20||n.x>mesh.width-20)  n.vx*=-1;
+        if(n.y<20||n.y>mesh.height-20) n.vy*=-1;
+      });
+      for (let i=0; i<mnodes.length; i++) {
+        for (let j=i+1; j<mnodes.length; j++) {
+          const dx=mnodes[i].x-mnodes[j].x, dy=mnodes[i].y-mnodes[j].y;
+          const d=Math.sqrt(dx*dx+dy*dy);
+          if (d<160) {
+            mCtx.beginPath(); mCtx.moveTo(mnodes[i].x,mnodes[i].y); mCtx.lineTo(mnodes[j].x,mnodes[j].y);
+            mCtx.strokeStyle='rgba(0,229,255,'+(1-d/160)*0.25+')'; mCtx.lineWidth=0.8; mCtx.stroke();
+          }
+        }
+      }
+      for (let k=mpackets.length-1; k>=0; k--) {
+        const p=mpackets[k]; p.t+=p.speed;
+        if (p.t>1) { mpackets.splice(k,1); continue; }
+        const fn=mnodes[p.from], tn=mnodes[p.to];
+        const px=fn.x+(tn.x-fn.x)*p.t, py=fn.y+(tn.y-fn.y)*p.t;
+        mCtx.beginPath(); mCtx.arc(px,py,3,0,Math.PI*2);
+        mCtx.fillStyle=p.color; mCtx.shadowColor=p.color; mCtx.shadowBlur=8; mCtx.fill();
+        mCtx.shadowBlur=0;
+      }
+      mnodes.forEach(function(n, i) {
+        const r=n.type==='gateway'?7:n.type==='relay'?5:4;
+        const col=n.type==='gateway'?'#00e5ff':n.type==='relay'?'#00ff88':'#5a7a8a';
+        const pingR=r+(Math.sin(n.pulse)*4+4);
+        mCtx.beginPath(); mCtx.arc(n.x,n.y,pingR,0,Math.PI*2);
+        mCtx.strokeStyle=col+'44'; mCtx.lineWidth=1; mCtx.stroke();
+        mCtx.beginPath(); mCtx.arc(n.x,n.y,r,0,Math.PI*2);
+        mCtx.fillStyle=col+'33'; mCtx.fill();
+        mCtx.strokeStyle=col; mCtx.lineWidth=1.5; mCtx.stroke();
+        mCtx.font='8px Share Tech Mono'; mCtx.fillStyle=col;
+        mCtx.fillText('N'+String(i).padStart(2,'0'), n.x+r+3, n.y+3);
+      });
+      requestAnimationFrame(drawMesh);
+    }
+    drawMesh();
+  }
+
+  // ——— CIRCUIT CANVAS ———
+  const cc = document.getElementById('circuitCanvas');
+  if (cc) {
+    const cCtx = cc.getContext('2d');
+    function resizeCC() { cc.width=cc.offsetWidth||400; cc.height=cc.offsetHeight||280; }
+    resizeCC();
+    const TRACES = [
+      {x1:20,y1:40,x2:120,y2:40},{x1:120,y1:40,x2:120,y2:100},{x1:120,y1:100,x2:220,y2:100},
+      {x1:220,y1:100,x2:220,y2:40},{x1:220,y1:40,x2:320,y2:40},
+      {x1:20,y1:160,x2:80,y2:160},{x1:80,y1:160,x2:80,y2:220},{x1:80,y1:220,x2:200,y2:220},
+      {x1:200,y1:220,x2:200,y2:160},{x1:200,y1:160,x2:320,y2:160},
+      {x1:40,y1:40,x2:40,y2:160},{x1:160,y1:40,x2:160,y2:160},{x1:280,y1:40,x2:280,y2:160}
+    ];
+    const signals = [];
+    function spawnSignal() {
+      const tr=TRACES[Math.floor(Math.random()*TRACES.length)];
+      signals.push({tr:tr, t:0, speed:0.015+Math.random()*0.01, col:Math.random()<0.5?'#00e5ff':'#00ff88'});
+    }
+    setInterval(spawnSignal, 400);
+    function drawCircuit() {
+      if (!cc.offsetWidth) { requestAnimationFrame(drawCircuit); return; }
+      cCtx.clearRect(0,0,cc.width,cc.height);
+      cCtx.fillStyle='rgba(5,13,26,1)'; cCtx.fillRect(0,0,cc.width,cc.height);
+      const scaleX=cc.width/340, scaleY=cc.height/260;
+      TRACES.forEach(function(t) {
+        cCtx.beginPath(); cCtx.moveTo(t.x1*scaleX,t.y1*scaleY); cCtx.lineTo(t.x2*scaleX,t.y2*scaleY);
+        cCtx.strokeStyle='rgba(0,229,255,0.2)'; cCtx.lineWidth=2; cCtx.stroke();
+      });
+      [[20,40],[120,40],[120,100],[220,100],[220,40],[320,40],[20,160],[80,160],[80,220],[200,220],[200,160],[320,160]].forEach(function(p) {
+        cCtx.beginPath(); cCtx.arc(p[0]*scaleX,p[1]*scaleY,3,0,Math.PI*2);
+        cCtx.fillStyle='rgba(0,229,255,0.7)'; cCtx.fill();
+      });
+      [[120,55,80,50],[220,55,80,50],[80,165,80,50],[200,165,80,50]].forEach(function(ic) {
+        cCtx.fillStyle='rgba(0,229,255,0.05)'; cCtx.strokeStyle='rgba(0,229,255,0.4)'; cCtx.lineWidth=1;
+        cCtx.fillRect((ic[0]-ic[2]/2)*scaleX,(ic[1]-ic[3]/2)*scaleY,ic[2]*scaleX,ic[3]*scaleY);
+        cCtx.strokeRect((ic[0]-ic[2]/2)*scaleX,(ic[1]-ic[3]/2)*scaleY,ic[2]*scaleX,ic[3]*scaleY);
+        cCtx.font=(8*scaleX)+'px Share Tech Mono'; cCtx.fillStyle='rgba(0,229,255,0.6)';
+        cCtx.fillText('MCU',(ic[0]-14)*scaleX,(ic[1]+3)*scaleY);
+      });
+      for (let k=signals.length-1; k>=0; k--) {
+        const s=signals[k]; s.t+=s.speed;
+        if (s.t>1) { signals.splice(k,1); continue; }
+        const px=(s.tr.x1+(s.tr.x2-s.tr.x1)*s.t)*scaleX;
+        const py=(s.tr.y1+(s.tr.y2-s.tr.y1)*s.t)*scaleY;
+        cCtx.beginPath(); cCtx.arc(px,py,3,0,Math.PI*2);
+        cCtx.fillStyle=s.col; cCtx.shadowColor=s.col; cCtx.shadowBlur=8; cCtx.fill();
+        cCtx.shadowBlur=0;
+      }
+      requestAnimationFrame(drawCircuit);
+    }
+    drawCircuit();
+  }
+
+  // ——— SCROLL REVEAL ———
+  const reveals = document.querySelectorAll('.reveal');
+  if (reveals.length) {
+    // Force-show fallback: if IO hasn't triggered within 3s, make everything visible
+    const revealFallback = setTimeout(function() {
+      reveals.forEach(function(r) { r.classList.add('visible'); });
+    }, 3000);
+
+    const observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0, rootMargin: '0px 0px -40px 0px' });
+
+    reveals.forEach(function(r) { observer.observe(r); });
+
+    // Clear fallback once first element triggers (IO is working)
+    const clearFallback = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) { clearTimeout(revealFallback); clearFallback.disconnect(); }
+      });
+    }, { threshold: 0 });
+    if (reveals[0]) clearFallback.observe(reveals[0]);
+  }
+
+}); // end DOMContentLoaded
+
+/* ── HAMBURGER MENU ── */
+document.addEventListener('DOMContentLoaded', function() {
+  var hamburger   = document.getElementById('nav-hamburger');
+  var mobileMenu  = document.getElementById('mobile-menu');
+  var mobileLinks = mobileMenu ? mobileMenu.querySelectorAll('a') : [];
+
+  function openMenu() {
+    hamburger.classList.add('is-open');
+    mobileMenu.classList.add('is-open');
+    hamburger.setAttribute('aria-expanded','true');
+    mobileMenu.setAttribute('aria-hidden','false');
+  }
+  function closeMenu() {
+    hamburger.classList.remove('is-open');
+    mobileMenu.classList.remove('is-open');
+    hamburger.setAttribute('aria-expanded','false');
+    mobileMenu.setAttribute('aria-hidden','true');
+  }
+
+  if (hamburger) {
+    hamburger.addEventListener('click', function(e) {
+      e.stopPropagation();
+      hamburger.classList.contains('is-open') ? closeMenu() : openMenu();
+    });
+  }
+
+  mobileLinks.forEach(function(link) {
+    link.addEventListener('click', function() { closeMenu(); });
+  });
+
+  document.addEventListener('click', function(e) {
+    if (mobileMenu && mobileMenu.classList.contains('is-open')) {
+      if (!mobileMenu.contains(e.target) && e.target !== hamburger) closeMenu();
+    }
+  });
+});
+
+/* ── EFFECTS TOGGLE ── */
+document.addEventListener('DOMContentLoaded', function() {
+  var toggleBtn = document.getElementById('toggle-effects');
+  var effectsOn = true;
+
+  /* Disable custom cursor on touch devices from the start */
+  if (window.matchMedia('(hover: none)').matches) {
+    document.body.classList.add('effects-disabled');
+    effectsOn = false;
+    if (toggleBtn) toggleBtn.textContent = 'Enable Effects';
+  }
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', function() {
+      effectsOn = !effectsOn;
+      if (effectsOn) {
+        document.body.classList.remove('effects-disabled');
+        toggleBtn.textContent = 'Disable Effects';
+      } else {
+        document.body.classList.add('effects-disabled');
+        toggleBtn.textContent = 'Enable Effects';
+      }
+    });
+  }
+});
+</script>
+</body>
+</html>
