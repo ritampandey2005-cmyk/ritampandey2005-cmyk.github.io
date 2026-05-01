@@ -41,12 +41,10 @@ body {
   overflow-x: hidden;
 }
 
-/* Custom cursor only on pointer devices */
 @media (hover: hover) and (pointer: fine) {
   body { cursor: none; }
 }
 
-/* CUSTOM CURSOR */
 .cursor {
   position: fixed;
   width: 12px; height: 12px;
@@ -72,7 +70,6 @@ body {
 }
 body:hover .cursor-ring { opacity:1; }
 
-/* SCANLINE OVERLAY */
 body::after {
   content: '';
   position: fixed;
@@ -82,7 +79,6 @@ body::after {
   z-index: 100;
 }
 
-/* CANVAS BG */
 #bgCanvas {
   position: fixed;
   inset: 0;
@@ -90,7 +86,6 @@ body::after {
   opacity: 0.6;
 }
 
-/* NOISE TEXTURE */
 body::before {
   content: '';
   position: fixed;
@@ -101,7 +96,6 @@ body::before {
   opacity: 0.5;
 }
 
-/* NAV */
 nav {
   position: fixed;
   top: 0; left: 0; right: 0;
@@ -163,13 +157,11 @@ nav {
   animation: pulse 2s infinite;
 }
 
-/* SECTIONS */
 section {
   position: relative;
   z-index: 2;
 }
 
-/* ===== HERO ===== */
 #hero {
   min-height: 100vh;
   display: flex;
@@ -278,7 +270,6 @@ section {
   animation: fadeUp 0.8s 1.1s forwards;
 }
 
-/* Actions wrapper: stacks btns above stats in normal flow */
 .hero-actions {
   display: flex;
   flex-direction: column;
@@ -290,7 +281,6 @@ section {
   animation: fadeUp 0.8s 1.1s forwards;
   width: 100%;
 }
-/* Override child animations — parent handles the reveal */
 .hero-actions .hero-btns,
 .hero-actions .hero-stats {
   opacity: 1;
@@ -345,7 +335,6 @@ section {
   cursor: none;
   position: relative;
   overflow: hidden;
-  /* No isolation — let color inherit normally */
 }
 .btn::before {
   content: '';
@@ -363,18 +352,15 @@ section {
   transition: color 0.3s;
   display: inline-block;
 }
-/* Cyan button hover — black text on cyan fill */
 .btn:hover { color: var(--black); }
 .btn:hover::before { transform: translateX(0); }
 .btn:hover span { color: var(--black); }
 
-/* Green button */
 .btn.green {
   border-color: var(--green);
   color: var(--green);
 }
 .btn.green::before { background: var(--green); }
-/* Green button hover — black text on green fill, !important to override inheritance */
 .btn.green:hover span { color: var(--black) !important; }
 .btn.green:hover { color: var(--black); }
 
@@ -413,7 +399,6 @@ section {
   to { opacity:1; transform: translateY(0); }
 }
 
-/* ===== SECTION COMMON ===== */
 .section-inner {
   max-width: 1200px;
   margin: 0 auto;
@@ -446,7 +431,6 @@ section {
 }
 .section-line.green { background: var(--green); }
 
-/* DIVIDER */
 .section-divider {
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--border), transparent);
@@ -455,7 +439,6 @@ section {
   z-index: 2;
 }
 
-/* ===== ABOUT ===== */
 #about { background: var(--deep-blue); }
 .about-grid {
   display: grid;
@@ -509,7 +492,6 @@ section {
   font-weight: 400;
 }
 
-/* ===== PATENTS / SYSTEMS ===== */
 #patents { background: var(--black); }
 .patents-grid {
   display: grid;
@@ -630,7 +612,6 @@ section {
 }
 .patent-card.green-card .patent-year { color: var(--green); }
 
-/* ===== ROBOTICS LAB ===== */
 #robotics { background: var(--deep-blue); }
 .robotics-grid {
   display: grid;
@@ -667,15 +648,6 @@ section {
   margin-top: auto;
   padding-top: 1rem;
 }
-.project-card {
-  border: 1px solid var(--border);
-  background: var(--card-bg);
-  overflow: hidden;
-  position: relative;
-  transition: border-color 0.3s;
-  cursor: none;
-}
-.project-card:hover { border-color: var(--cyan); }
 .project-visual {
   height: 180px;
   background: var(--mid-blue);
@@ -718,7 +690,6 @@ section {
   text-transform: uppercase;
 }
 
-/* ===== COMMS SECTION ===== */
 #comms { background: var(--black); }
 .comms-visual {
   height: 320px;
@@ -772,7 +743,6 @@ section {
   font-weight: 300;
 }
 
-/* ===== EMBEDDED ===== */
 #embedded { background: var(--deep-blue); }
 .embedded-grid {
   display: grid;
@@ -782,13 +752,11 @@ section {
 }
 @media(max-width:768px){ .embedded-grid { grid-template-columns:1fr; } }
 
-/* Left column sticks — header + animation travel together */
 .embedded-left {
   position: sticky;
   top: 72px;
   align-self: start;
 }
-/* Disable sticky on mobile */
 @media(max-width:768px){
   .embedded-left { position: relative; top: auto; }
 }
@@ -844,7 +812,6 @@ section {
   margin-top: 0.5rem;
 }
 
-/* ===== VLSI ===== */
 #vlsi { background: var(--black); }
 .vlsi-grid {
   display: grid;
@@ -900,7 +867,6 @@ section {
 }
 .waveform-line svg { width: 100%; height: 100%; }
 
-/* ===== RESEARCH ===== */
 #research { background: var(--deep-blue); }
 .research-grid {
   display: grid;
@@ -943,7 +909,6 @@ section {
   font-weight: 300;
 }
 
-/* ===== ACHIEVEMENTS ===== */
 #achievements { background: var(--black); }
 .ach-grid {
   display: grid;
@@ -1002,7 +967,6 @@ section {
   font-weight: 300;
 }
 
-/* ===== CONTACT ===== */
 #contact { background: var(--deep-blue); }
 .contact-console {
   border: 1px solid var(--border);
@@ -1062,7 +1026,6 @@ section {
   font-style: italic;
 }
 
-/* ===== FOOTER ===== */
 footer {
   position: relative;
   z-index: 2;
@@ -1108,7 +1071,6 @@ footer {
   50% { opacity:0.4; box-shadow: none; }
 }
 
-/* SCROLL REVEAL */
 .reveal {
   opacity: 0;
   transform: translateY(30px);
@@ -1123,7 +1085,6 @@ footer {
 .reveal-delay-3 { transition-delay: 0.3s; }
 .reveal-delay-4 { transition-delay: 0.4s; }
 
-/* On touch/mobile devices — skip reveal animation, show all content immediately */
 @media (hover: none), (max-width: 600px) {
   .reveal {
     opacity: 1 !important;
@@ -1132,13 +1093,11 @@ footer {
   }
 }
 
-/* Restore auto cursor on all elements for touch/mobile */
 @media (hover: none) {
   * { cursor: auto !important; }
   .cursor, .cursor-ring { display: none !important; }
 }
 
-/* PROGRESS INDICATOR */
 .progress-bar {
   position: fixed;
   top: 56px; left: 0;
@@ -1149,8 +1108,6 @@ footer {
   box-shadow: 0 0 8px var(--cyan);
 }
 
-
-/* ── EFFECTS TOGGLE BUTTON ── */
 #toggle-effects {
   position: fixed;
   bottom: 1.4rem;
@@ -1170,12 +1127,10 @@ footer {
 }
 #toggle-effects:hover { color: var(--cyan); border-color: var(--cyan); }
 
-/* Effects-disabled state */
 .effects-disabled * { cursor: auto !important; }
 .effects-disabled #cursor,
 .effects-disabled #cursorRing { display: none !important; }
 
-/* ── HAMBURGER BUTTON ── */
 #nav-hamburger {
   display: none;
   flex-direction: column;
@@ -1199,12 +1154,10 @@ footer {
   transform-origin: center;
 }
 #nav-hamburger:hover .bar { background: var(--cyan); }
-/* Open state — bars form X */
 #nav-hamburger.is-open .bar:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
 #nav-hamburger.is-open .bar:nth-child(2) { opacity: 0; transform: scaleX(0); }
 #nav-hamburger.is-open .bar:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 
-/* ── MOBILE DRAWER ── */
 #mobile-menu {
   display: none;
   position: fixed;
@@ -1251,7 +1204,6 @@ footer {
   opacity: 0.5;
 }
 
-/* ── RESPONSIVE ── */
 @media(max-width:600px){
   .nav-links { display: none; }
   #nav-hamburger { display: flex; }
@@ -1270,7 +1222,6 @@ footer {
 
 <canvas id="bgCanvas"></canvas>
 
-<!-- NAV -->
 <nav>
   <div class="nav-logo">RITAM<span>.</span>LAB</div>
   <ul class="nav-links">
@@ -1293,7 +1244,6 @@ footer {
   </div>
 </nav>
 
-<!-- MOBILE MENU DRAWER -->
 <div id="mobile-menu" aria-hidden="true">
   <ul>
     <li><a href="#about">Profile</a></li>
@@ -1307,7 +1257,6 @@ footer {
   </ul>
 </div>
 
-<!-- HERO -->
 <section id="hero">
   <div class="hero-grid"></div>
   <div class="hero-corner tl"></div>
@@ -1347,7 +1296,6 @@ footer {
 
 <div class="section-divider"></div>
 
-<!-- ABOUT -->
 <section id="about">
   <div class="section-inner">
     <div class="section-header reveal">
@@ -1373,7 +1321,7 @@ footer {
         <div class="spec-row"><span class="spec-key">Domain 02</span><span class="spec-val">Distributed Communication Systems</span></div>
         <div class="spec-row green-accent"><span class="spec-key">Domain 03</span><span class="spec-val">Embedded Systems Architecture</span></div>
         <div class="spec-row"><span class="spec-key">Domain 04</span><span class="spec-val">VLSI & Hardware Design</span></div>
-        <div class="spec-row green-accent"><span class="spec-key">Patents</span><span class="spec-val">9 Filed · 2025–2026</span></div>
+        <div class="spec-row green-accent"><span class="spec-key">Patents</span><span class="spec-val">12 Filed · 2025–2026</span></div>
         <div class="spec-row"><span class="spec-key">Mode</span><span class="spec-val">Open to Collaboration</span></div>
       </div>
     </div>
@@ -1382,7 +1330,6 @@ footer {
 
 <div class="section-divider"></div>
 
-<!-- PATENTS -->
 <section id="patents">
   <div class="section-inner">
     <div class="section-header reveal">
@@ -1405,7 +1352,6 @@ footer {
         <div class="patent-footer">
           <span class="patent-tag">Robotics</span>
           <span class="patent-year">2025</span>
-        
           <div class="card-hint">// CLICK TO KNOW MORE ›</div>
         </div>
       </div>
@@ -1423,7 +1369,6 @@ footer {
         <div class="patent-footer">
           <span class="patent-tag">Autonomous UAV</span>
           <span class="patent-year">2025</span>
-        
           <div class="card-hint">// CLICK TO KNOW MORE ›</div>
         </div>
       </div>
@@ -1441,7 +1386,6 @@ footer {
         <div class="patent-footer">
           <span class="patent-tag">Agricultural Robotics</span>
           <span class="patent-year">2025</span>
-        
           <div class="card-hint">// CLICK TO KNOW MORE ›</div>
         </div>
       </div>
@@ -1459,7 +1403,6 @@ footer {
         <div class="patent-footer">
           <span class="patent-tag">Distributed Comms</span>
           <span class="patent-year">2026</span>
-        
           <div class="card-hint">// CLICK TO KNOW MORE ›</div>
         </div>
       </div>
@@ -1477,7 +1420,6 @@ footer {
         <div class="patent-footer">
           <span class="patent-tag">Embedded Systems</span>
           <span class="patent-year">2026</span>
-        
           <div class="card-hint">// CLICK TO KNOW MORE ›</div>
         </div>
       </div>
@@ -1495,7 +1437,6 @@ footer {
         <div class="patent-footer">
           <span class="patent-tag">Communication Protocols</span>
           <span class="patent-year">2026</span>
-        
           <div class="card-hint">// CLICK TO KNOW MORE ›</div>
         </div>
       </div>
@@ -1513,7 +1454,6 @@ footer {
         <div class="patent-footer">
           <span class="patent-tag">Network Architecture</span>
           <span class="patent-year">2026</span>
-        
           <div class="card-hint">// CLICK TO KNOW MORE ›</div>
         </div>
       </div>
@@ -1531,10 +1471,10 @@ footer {
         <div class="patent-footer">
           <span class="patent-tag">Smart Infrastructure</span>
           <span class="patent-year">2026</span>
-        
           <div class="card-hint">// CLICK TO KNOW MORE ›</div>
         </div>
       </div>
+
       <!-- AEGIS -->
       <div class="patent-card reveal reveal-delay-2" data-patent="AEGIS">
         <div class="patent-corner"></div>
@@ -1548,7 +1488,57 @@ footer {
         <div class="patent-footer">
           <span class="patent-tag">Intelligent Surveillance</span>
           <span class="patent-year">2026</span>
-        
+          <div class="card-hint">// CLICK TO KNOW MORE ›</div>
+        </div>
+      </div>
+
+      <!-- PHIMS -->
+      <div class="patent-card reveal" data-patent="PHIMS">
+        <div class="patent-corner"></div>
+        <div class="patent-status">Patent Filed · 2026</div>
+        <div class="patent-code">PHIMS</div>
+        <div class="patent-name">Predictive Hardware Intelligence &amp; Monitoring System</div>
+        <div class="patent-section-label">// PROBLEM</div>
+        <p class="patent-text">Traditional monitoring systems are reactive and rely on isolated parameters like voltage, temperature, or current, making them incapable of detecting early-stage degradation or predicting failures before they occur.</p>
+        <div class="patent-section-label">// ENGINEERING SOLUTION</div>
+        <p class="patent-text">Multi-modal AI-based predictive monitoring system integrating electrical, thermal, vibration, and RC-based dynamic response sensing with hierarchical edge-cloud intelligence for early degradation detection and failure prediction.</p>
+        <div class="patent-footer">
+          <span class="patent-tag">AI Monitoring</span>
+          <span class="patent-year">2026</span>
+          <div class="card-hint">// CLICK TO KNOW MORE ›</div>
+        </div>
+      </div>
+
+      <!-- MODAS -->
+      <div class="patent-card reveal reveal-delay-1" data-patent="MODAS">
+        <div class="patent-corner"></div>
+        <div class="patent-status">Patent Filed · 2026</div>
+        <div class="patent-code">MODAS</div>
+        <div class="patent-name">Multi-View Optical Defect Analysis System</div>
+        <div class="patent-section-label">// PROBLEM</div>
+        <p class="patent-text">Existing inspection systems rely on single-view imaging or mechanical rotation, leading to incomplete defect detection, latency, and inability to detect internal defects in transparent materials.</p>
+        <div class="patent-section-label">// ENGINEERING SOLUTION</div>
+        <p class="patent-text">Non-rotational multi-view optical inspection system with synchronized imaging and transmitted light analysis, enabling detection of both internal and external defects using AI-based adaptive learning.</p>
+        <div class="patent-footer">
+          <span class="patent-tag">Optical Inspection</span>
+          <span class="patent-year">2026</span>
+          <div class="card-hint">// CLICK TO KNOW MORE ›</div>
+        </div>
+      </div>
+
+      <!-- AHCF -->
+      <div class="patent-card green-card reveal reveal-delay-2" data-patent="AHCF">
+        <div class="patent-corner"></div>
+        <div class="patent-status">Patent Filed · 2026</div>
+        <div class="patent-code">AHCF</div>
+        <div class="patent-name">Aqua Hybrid Communication Framework</div>
+        <div class="patent-section-label">// PROBLEM</div>
+        <p class="patent-text">Underwater communication systems rely on either acoustic or optical methods independently, leading to inefficiency, poor adaptability, and lack of intelligent coordination between sensing and communication.</p>
+        <div class="patent-section-label">// ENGINEERING SOLUTION</div>
+        <p class="patent-text">Hybrid underwater communication framework integrating acoustic and optical channels with AI-driven adaptive switching, ISAC, and ultra-low-power wake-up mechanisms for intelligent underwater networks.</p>
+        <div class="patent-footer">
+          <span class="patent-tag">Underwater Networks</span>
+          <span class="patent-year">2026</span>
           <div class="card-hint">// CLICK TO KNOW MORE ›</div>
         </div>
       </div>
@@ -1568,7 +1558,6 @@ footer {
       <div class="project-card reveal">
         <div class="project-visual">
           <svg width="220" height="160" viewBox="0 0 220 160">
-            <!-- Robotic arm SVG -->
             <g stroke="#00e5ff" fill="none" stroke-width="1.5">
               <rect x="95" y="120" width="30" height="20" rx="2" fill="rgba(0,229,255,0.08)"/>
               <line x1="110" y1="120" x2="110" y2="100"/>
@@ -1577,20 +1566,17 @@ footer {
               <rect x="38" y="62" width="26" height="12" rx="2" fill="rgba(0,229,255,0.08)" transform="rotate(-35,51,68)"/>
               <line x1="51" y1="62" x2="70" y2="40" class="arm-seg2"/>
               <rect x="60" y="30" width="24" height="10" rx="2" fill="rgba(0,229,255,0.08)" transform="rotate(20,72,35)"/>
-              <!-- gripper -->
               <line x1="76" y1="35" x2="66" y2="22"/>
               <line x1="76" y1="35" x2="86" y2="22"/>
               <line x1="66" y1="22" x2="62" y2="16"/>
               <line x1="86" y1="22" x2="90" y2="16"/>
             </g>
-            <!-- Joint circles -->
             <g fill="#00e5ff" opacity="0.8">
               <circle cx="110" cy="120" r="4"/>
               <circle cx="90" cy="96" r="3"/>
               <circle cx="51" cy="68" r="3"/>
               <circle cx="76" cy="35" r="3"/>
             </g>
-            <!-- Scan lines -->
             <g stroke="#00ff88" stroke-width="0.5" opacity="0.3">
               <line x1="0" y1="40" x2="220" y2="40" class="scan-line"/>
               <line x1="0" y1="80" x2="220" y2="80" class="scan-line"/>
@@ -1613,28 +1599,21 @@ footer {
       <div class="project-card reveal reveal-delay-1">
         <div class="project-visual">
           <svg width="220" height="160" viewBox="0 0 220 160">
-            <!-- Rover SVG -->
             <g stroke="#00e5ff" fill="none" stroke-width="1.5">
-              <!-- Body -->
               <rect x="55" y="55" width="110" height="60" rx="4" fill="rgba(0,229,255,0.06)"/>
-              <!-- Sensors on top -->
               <rect x="75" y="40" width="70" height="18" rx="2" fill="rgba(0,229,255,0.1)"/>
               <circle cx="90" cy="49" r="5" fill="rgba(0,229,255,0.2)"/>
               <circle cx="110" cy="49" r="5" fill="rgba(0,229,255,0.2)"/>
               <circle cx="130" cy="49" r="5" fill="rgba(0,229,255,0.2)"/>
-              <!-- Wheels -->
               <circle cx="72" cy="118" r="16" fill="rgba(0,229,255,0.05)"/>
               <circle cx="72" cy="118" r="10"/>
               <circle cx="148" cy="118" r="16" fill="rgba(0,229,255,0.05)"/>
               <circle cx="148" cy="118" r="10"/>
-              <!-- Module slot lines -->
               <line x1="80" y1="68" x2="140" y2="68"/>
               <line x1="80" y1="82" x2="140" y2="82"/>
               <line x1="80" y1="96" x2="140" y2="96"/>
-              <!-- Pogo pin indicator -->
               <rect x="100" y="62" width="20" height="6" rx="1" fill="rgba(0,255,136,0.15)" stroke="#00ff88" stroke-width="1"/>
             </g>
-            <!-- Terrain scan dots -->
             <g fill="#00ff88" opacity="0.6">
               <circle cx="30" cy="145" r="2"/>
               <circle cx="50" cy="138" r="2"/>
@@ -1661,21 +1640,16 @@ footer {
       <div class="project-card reveal">
         <div class="project-visual">
           <svg width="220" height="160" viewBox="0 0 220 160">
-            <!-- UAV Zarvex -->
             <g stroke="#00e5ff" fill="none" stroke-width="1.5">
-              <!-- Central body -->
               <rect x="92" y="68" width="36" height="24" rx="4" fill="rgba(0,229,255,0.1)"/>
-              <!-- Arms -->
               <line x1="92" y1="72" x2="50" y2="50"/>
               <line x1="128" y1="72" x2="170" y2="50"/>
               <line x1="92" y1="88" x2="50" y2="110"/>
               <line x1="128" y1="88" x2="170" y2="110"/>
-              <!-- Rotors -->
               <ellipse cx="50" cy="50" rx="20" ry="6" fill="rgba(0,229,255,0.08)"/>
               <ellipse cx="170" cy="50" rx="20" ry="6" fill="rgba(0,229,255,0.08)"/>
               <ellipse cx="50" cy="110" rx="20" ry="6" fill="rgba(0,229,255,0.08)"/>
               <ellipse cx="170" cy="110" rx="20" ry="6" fill="rgba(0,229,255,0.08)"/>
-              <!-- Vectoring indicators -->
               <line x1="50" y1="44" x2="60" y2="36" stroke="#00ff88" stroke-dasharray="3,2"/>
               <line x1="170" y1="44" x2="180" y2="36" stroke="#00ff88" stroke-dasharray="3,2"/>
             </g>
@@ -1697,9 +1671,7 @@ footer {
       <div class="project-card reveal reveal-delay-1">
         <div class="project-visual" style="background: linear-gradient(180deg, #050d1a 0%, #071528 100%);">
           <svg width="220" height="160" viewBox="0 0 220 160">
-            <!-- Swarm nodes -->
             <g>
-              <!-- Node 1 -->
               <circle cx="110" cy="80" r="8" fill="rgba(0,229,255,0.15)" stroke="#00e5ff" stroke-width="1.5"/>
               <circle cx="60" cy="50" r="6" fill="rgba(0,229,255,0.1)" stroke="#00e5ff" stroke-width="1"/>
               <circle cx="160" cy="50" r="6" fill="rgba(0,229,255,0.1)" stroke="#00e5ff" stroke-width="1"/>
@@ -1707,7 +1679,6 @@ footer {
               <circle cx="160" cy="110" r="6" fill="rgba(0,229,255,0.1)" stroke="#00e5ff" stroke-width="1"/>
               <circle cx="110" cy="30" r="5" fill="rgba(0,255,136,0.1)" stroke="#00ff88" stroke-width="1"/>
               <circle cx="110" cy="130" r="5" fill="rgba(0,255,136,0.1)" stroke="#00ff88" stroke-width="1"/>
-              <!-- Links -->
               <line x1="110" y1="80" x2="60" y2="50" stroke="#00e5ff" stroke-width="0.5" opacity="0.4"/>
               <line x1="110" y1="80" x2="160" y2="50" stroke="#00e5ff" stroke-width="0.5" opacity="0.4"/>
               <line x1="110" y1="80" x2="60" y2="110" stroke="#00e5ff" stroke-width="0.5" opacity="0.4"/>
@@ -1734,37 +1705,28 @@ footer {
       <div class="project-card reveal reveal-delay-1">
         <div class="project-visual" style="background: linear-gradient(180deg, #050d1a 0%, #071528 100%);">
           <svg width="220" height="160" viewBox="0 0 220 160">
-            <!-- AEGIS surveillance visual -->
             <g stroke="#00e5ff" fill="none" stroke-width="1.2">
-              <!-- Camera body -->
               <rect x="88" y="18" width="44" height="22" rx="3" fill="rgba(0,229,255,0.1)"/>
               <circle cx="110" cy="29" r="7" fill="rgba(0,229,255,0.08)" stroke="#00e5ff" stroke-width="1.5"/>
               <circle cx="110" cy="29" r="3" fill="rgba(0,229,255,0.4)"/>
-              <!-- Mount -->
               <line x1="110" y1="40" x2="110" y2="52"/>
               <rect x="102" y="52" width="16" height="6" rx="1" fill="rgba(0,229,255,0.1)"/>
             </g>
-            <!-- FOV cone -->
             <path d="M110,40 L48,138 L172,138 Z" fill="rgba(0,229,255,0.04)" stroke="rgba(0,229,255,0.2)" stroke-width="0.8"/>
-            <!-- Scan lines in FOV -->
             <g stroke="rgba(0,229,255,0.12)" stroke-width="0.6">
               <line x1="110" y1="40" x2="60" y2="138"/>
               <line x1="110" y1="40" x2="85" y2="138"/>
               <line x1="110" y1="40" x2="135" y2="138"/>
               <line x1="110" y1="40" x2="160" y2="138"/>
             </g>
-            <!-- Detection bounding box -->
             <rect x="82" y="88" width="56" height="38" fill="none" stroke="#00ff88" stroke-width="1.2" stroke-dasharray="4,2"/>
-            <!-- Corner ticks -->
             <g stroke="#00ff88" stroke-width="1.5">
               <polyline points="82,96 82,88 90,88"/>
               <polyline points="130,88 138,88 138,96"/>
               <polyline points="82,118 82,126 90,126"/>
               <polyline points="130,126 138,126 138,118"/>
             </g>
-            <!-- ID label -->
             <text x="85" y="84" font-family="Share Tech Mono" font-size="6" fill="#00ff88">ID:VERIFIED</text>
-            <!-- Horizontal sweep line -->
             <line x1="68" y1="108" x2="152" y2="108" stroke="rgba(0,255,136,0.3)" stroke-width="1" stroke-dasharray="3,3"/>
           </svg>
           <div class="project-visual-label">AEGIS_CORE_v1.0</div>
@@ -1783,27 +1745,20 @@ footer {
       <div class="project-card reveal reveal-delay-2">
         <div class="project-visual" style="background: linear-gradient(180deg, #050d1a 0%, #071528 100%);">
           <svg width="220" height="160" viewBox="0 0 220 160">
-            <!-- AQUENTIS smart faucet / water system -->
             <g stroke="#00e5ff" fill="none" stroke-width="1.2">
-              <!-- Pipe body -->
               <rect x="96" y="10" width="28" height="60" rx="4" fill="rgba(0,229,255,0.07)"/>
-              <!-- Faucet spout -->
               <path d="M96,55 Q72,55 72,75 L72,90" stroke="#00e5ff" stroke-width="1.5" fill="none"/>
-              <!-- Sensor band on pipe -->
               <rect x="94" y="32" width="32" height="10" rx="2" fill="rgba(0,255,136,0.12)" stroke="#00ff88" stroke-width="1"/>
               <text x="97" y="40" font-family="Share Tech Mono" font-size="5.5" fill="#00ff88">SENSOR</text>
-              <!-- Flow droplets from spout -->
               <ellipse cx="72" cy="98"  rx="3" ry="4" fill="rgba(0,229,255,0.35)" stroke="#00e5ff" stroke-width="0.8"/>
               <ellipse cx="70" cy="110" rx="2.5" ry="3.5" fill="rgba(0,229,255,0.25)" stroke="#00e5ff" stroke-width="0.8"/>
               <ellipse cx="73" cy="121" rx="2" ry="3" fill="rgba(0,229,255,0.18)" stroke="#00e5ff" stroke-width="0.8"/>
             </g>
-            <!-- Ripple rings from water impact -->
             <g fill="none">
               <ellipse cx="72" cy="138" rx="10" ry="4" stroke="rgba(0,229,255,0.25)" stroke-width="0.8"/>
               <ellipse cx="72" cy="138" rx="18" ry="6" stroke="rgba(0,229,255,0.14)" stroke-width="0.8"/>
               <ellipse cx="72" cy="138" rx="26" ry="8" stroke="rgba(0,229,255,0.07)" stroke-width="0.8"/>
             </g>
-            <!-- Quality readout panel -->
             <rect x="126" y="30" width="68" height="60" rx="2" fill="rgba(0,229,255,0.04)" stroke="rgba(0,229,255,0.2)" stroke-width="0.8"/>
             <text x="131" y="43" font-family="Share Tech Mono" font-size="5.5" fill="rgba(0,229,255,0.5)">// QUALITY</text>
             <text x="131" y="55" font-family="Share Tech Mono" font-size="6.5" fill="#00ff88">pH   7.2</text>
@@ -1830,7 +1785,6 @@ footer {
 
 <div class="section-divider"></div>
 
-<!-- COMMS -->
 <section id="comms">
   <div class="section-inner">
     <div class="section-header reveal">
@@ -1866,11 +1820,9 @@ footer {
 
 <div class="section-divider"></div>
 
-<!-- EMBEDDED -->
 <section id="embedded">
   <div class="section-inner">
     <div class="embedded-grid">
-      <!-- LEFT: sticky column with header + animation -->
       <div class="embedded-left">
         <div class="section-header reveal">
           <div class="section-eyebrow">// STATION 03 — EMBEDDED SYSTEMS BENCH</div>
@@ -1881,7 +1833,6 @@ footer {
           <canvas id="circuitCanvas"></canvas>
         </div>
       </div>
-      <!-- RIGHT: scrolling cards -->
       <div class="embedded-projects">
         <div class="ep-item reveal">
           <div class="ep-title">UNIMOUNT Platform</div>
@@ -1915,7 +1866,6 @@ footer {
 
 <div class="section-divider"></div>
 
-<!-- VLSI -->
 <section id="vlsi">
   <div class="section-inner">
     <div class="section-header reveal">
@@ -1932,40 +1882,29 @@ footer {
               <path d="M0,0 L6,3 L0,6 Z" fill="#00e5ff"/>
             </marker>
           </defs>
-          <!-- Input lines -->
           <text x="10" y="68" font-family="Share Tech Mono" font-size="10" fill="#00e5ff">A</text>
           <line x1="22" y1="65" x2="60" y2="65" stroke="#00e5ff" stroke-width="1" marker-end="url(#arr)"/>
           <text x="10" y="108" font-family="Share Tech Mono" font-size="10" fill="#00e5ff">B</text>
           <line x1="22" y1="105" x2="60" y2="105" stroke="#00e5ff" stroke-width="1" marker-end="url(#arr)"/>
           <text x="10" y="148" font-family="Share Tech Mono" font-size="10" fill="#00ff88">Cin</text>
           <line x1="30" y1="145" x2="60" y2="145" stroke="#00ff88" stroke-width="1" marker-end="url(#arr)"/>
-
-          <!-- XOR gate 1 -->
           <path d="M60,55 Q80,85 60,115 Q95,85 60,55 Z" fill="rgba(0,229,255,0.08)" stroke="#00e5ff" stroke-width="1.2"/>
           <path d="M57,55 Q77,85 57,115" fill="none" stroke="#00e5ff" stroke-width="1"/>
           <text x="70" y="89" font-family="Share Tech Mono" font-size="8" fill="#00e5ff">XOR</text>
           <line x1="93" y1="85" x2="120" y2="85" stroke="#00e5ff" stroke-width="1"/>
-
-          <!-- AND gate -->
           <path d="M120,60 L140,60 Q165,60 165,85 Q165,110 140,110 L120,110 Z" fill="rgba(0,229,255,0.08)" stroke="#00e5ff" stroke-width="1.2"/>
           <text x="127" y="89" font-family="Share Tech Mono" font-size="8" fill="#00e5ff">AND</text>
           <line x1="165" y1="85" x2="200" y2="85" stroke="#00e5ff" stroke-width="1"/>
           <line x1="120" y1="75" x2="93" y2="75" stroke="#00e5ff" stroke-width="0.8" stroke-dasharray="3,2"/>
           <line x1="120" y1="95" x2="93" y2="115" stroke="#00e5ff" stroke-width="0.8" stroke-dasharray="3,2"/>
-
-          <!-- XOR gate 2 -->
           <path d="M120,130 Q140,160 120,190 Q155,160 120,130 Z" fill="rgba(0,255,136,0.08)" stroke="#00ff88" stroke-width="1.2"/>
           <path d="M117,130 Q137,160 117,190" fill="none" stroke="#00ff88" stroke-width="1"/>
           <text x="128" y="163" font-family="Share Tech Mono" font-size="8" fill="#00ff88">XOR</text>
           <line x1="93" y1="85" x2="106" y2="155" stroke="#00e5ff" stroke-width="0.7" stroke-dasharray="4,2" opacity="0.5"/>
           <line x1="60" y1="145" x2="120" y2="160" stroke="#00ff88" stroke-width="0.8"/>
           <line x1="152" y1="160" x2="200" y2="160" stroke="#00ff88" stroke-width="1"/>
-
-          <!-- Outputs -->
           <text x="205" y="89" font-family="Share Tech Mono" font-size="10" fill="#00e5ff">Cout</text>
           <text x="205" y="163" font-family="Share Tech Mono" font-size="10" fill="#00ff88">Sum</text>
-
-          <!-- OR gate -->
           <path d="M200,75 Q215,85 200,95 Q230,85 200,75 Z" fill="rgba(0,229,255,0.06)" stroke="#00e5ff" stroke-width="1"/>
         </svg>
       </div>
@@ -2025,7 +1964,6 @@ footer {
 
 <div class="section-divider"></div>
 
-<!-- RESEARCH -->
 <section id="research">
   <div class="section-inner">
     <div class="section-header reveal">
@@ -2060,7 +1998,6 @@ footer {
 
 <div class="section-divider"></div>
 
-<!-- ACHIEVEMENTS -->
 <section id="achievements">
   <div class="section-inner">
     <div class="section-header reveal">
@@ -2104,13 +2041,19 @@ footer {
         <p class="ach-desc">International presenter at UK Innovate — presenting advanced engineering research to a global innovation audience.</p>
       <div class="card-hint card-hint--amber">// CLICK TO KNOW MORE ›</div>
       </div>
+      <div class="ach-card reveal reveal-delay-1" data-ach="ccl">
+        <div class="ach-rank">06</div>
+        <div class="ach-icon">// TOP 6 · NATIONAL</div>
+        <div class="ach-title">India Top 6 — Cisco Champions League</div>
+        <p class="ach-desc">Ranked among the Top 6 teams nationally in the Cisco Champions League (CCL), competing in network innovation and intelligent systems design at a national scale.</p>
+      <div class="card-hint card-hint--amber">// CLICK TO KNOW MORE ›</div>
+      </div>
     </div>
   </div>
 </section>
 
 <div class="section-divider"></div>
 
-<!-- OTHER PROJECTS -->
 <section id="other-projects">
   <div class="section-inner">
     <div class="section-header reveal">
@@ -2223,7 +2166,6 @@ footer {
 
 <div class="section-divider"></div>
 
-<!-- CONTACT -->
 <section id="contact">
   <div class="section-inner">
     <div class="section-header reveal" style="text-align:center;">
@@ -2255,10 +2197,6 @@ footer {
   </div>
 </section>
 
-<!-- ═══════════════════════════════════════════════════════
-     ENHANCEMENT BLOCK — MODALS, HOVER OVERLAYS, ACH MODALS
-     ═══════════════════════════════════════════════════════ -->
-
 <!-- PATENT MODAL -->
 <div id="patentModal" class="enh-modal-backdrop" aria-hidden="true">
   <div class="enh-modal" id="patentModalInner">
@@ -2282,7 +2220,6 @@ footer {
           <p class="enh-modal-text" id="pm-solution"></p>
         </div>
       </div>
-      <!-- DYNAMIC MEDIA — injected by JS -->
       <div id="pm-media-container"></div>
     </div>
   </div>
@@ -2309,7 +2246,6 @@ footer {
     </div>
     <div class="enh-modal-body">
       <p class="enh-modal-text" id="am-desc"></p>
-      <!-- DYNAMIC MEDIA — injected by JS -->
       <div id="am-media-container"></div>
     </div>
   </div>
@@ -2333,7 +2269,6 @@ footer {
 </div>
 
 <style>
-/* ══ DYNAMIC MEDIA GRIDS ══ */
 .enh-media-section { margin-top: 2rem; }
 .enh-media-section + .enh-media-section { margin-top: 1.5rem; }
 
@@ -2387,42 +2322,6 @@ footer {
 .enh-media-thumb.amber-style:hover { border-color: var(--amber); }
 .enh-media-thumb.amber-style .thumb-placeholder span { color: rgba(255,170,0,0.35); }
 
-.enh-video-block {
-  margin-top: 0.8rem;
-  border: 1px dashed rgba(0,229,255,0.2);
-  background: rgba(0,229,255,0.02);
-  aspect-ratio: 16/7;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  transition: border-color 0.2s;
-}
-.enh-video-block:hover { border-color: rgba(0,229,255,0.5); }
-.enh-video-block-inner {
-  text-align: center; display: flex;
-  flex-direction: column; align-items: center; gap: 0.6rem;
-}
-.enh-video-play-icon {
-  width: 44px; height: 44px;
-  border: 1.5px solid rgba(0,229,255,0.4);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.1rem; color: var(--cyan);
-  transition: background 0.2s, border-color 0.2s;
-}
-.enh-video-block:hover .enh-video-play-icon {
-  background: rgba(0,229,255,0.1); border-color: var(--cyan);
-}
-.enh-video-block-text {
-  font-family: var(--font-body); font-size: 0.82rem;
-  color: var(--text-dim); font-weight: 300;
-}
-.enh-video-block-sub {
-  font-family: var(--font-mono); font-size: 0.55rem;
-  letter-spacing: 0.15em; color: rgba(0,229,255,0.3);
-  text-transform: uppercase;
-}
-
-/* ══ ENHANCED LIGHTBOX ══ */
 .enh-lightbox-backdrop {
   position: fixed; inset: 0; z-index: 3000;
   background: rgba(2,4,8,0.96);
@@ -2470,7 +2369,6 @@ footer {
   text-transform: uppercase; margin-top: 0.8rem;
 }
 
-/* Gallery nav arrows */
 .enh-lightbox-nav {
   position: absolute; top: 50%; transform: translateY(-50%);
   background: rgba(2,4,8,0.7); border: 1px solid var(--border);
@@ -2504,9 +2402,6 @@ footer {
 .patent-card > *:not(.card-overlay-canvas) { position: relative; z-index: 1; }
 .patent-card::before { z-index: 0; }
 
-/* ══════════════════════════════════════════
-   MODAL BACKDROP
-══════════════════════════════════════════ */
 .enh-modal-backdrop {
   position: fixed;
   inset: 0;
@@ -2526,9 +2421,6 @@ footer {
   pointer-events: all;
 }
 
-/* ══════════════════════════════════════════
-   MODAL PANEL
-══════════════════════════════════════════ */
 .enh-modal {
   background: #050d1a;
   border: 1px solid rgba(0,229,255,0.35);
@@ -2552,7 +2444,6 @@ footer {
   border-color: rgba(255,170,0,0.35);
 }
 
-/* top accent bar */
 .enh-modal::before {
   content: '';
   display: block;
@@ -2563,9 +2454,6 @@ footer {
   background: linear-gradient(90deg, transparent, var(--amber), transparent);
 }
 
-/* ══════════════════════════════════════════
-   MODAL CLOSE BUTTON
-══════════════════════════════════════════ */
 .enh-modal-close {
   position: absolute;
   top: 1rem; right: 1rem;
@@ -2587,9 +2475,6 @@ footer {
 .enh-modal-close span { font-size: 0.8rem; }
 .enh-modal-close--amber:hover { color: var(--amber); border-color: var(--amber); background: rgba(255,170,0,0.1); }
 
-/* ══════════════════════════════════════════
-   MODAL CONTENT BLOCKS
-══════════════════════════════════════════ */
 .enh-modal-eyebrow {
   font-family: var(--font-mono);
   font-size: 0.55rem;
@@ -2667,9 +2552,6 @@ footer {
   font-weight: 300;
 }
 
-/* ══════════════════════════════════════════
-   IMAGE GRID
-══════════════════════════════════════════ */
 .enh-img-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -2720,9 +2602,6 @@ footer {
 }
 .enh-img-placeholder--amber span { color: rgba(255,170,0,0.35); }
 
-/* ══════════════════════════════════════════
-   VIDEO SLOT
-══════════════════════════════════════════ */
 .enh-video-slot {
   margin-top: 0.8rem;
   border: 1px dashed rgba(0,229,255,0.2);
@@ -2758,60 +2637,8 @@ footer {
   text-transform: uppercase;
 }
 
-/* ══════════════════════════════════════════
-   IMAGE LIGHTBOX
-══════════════════════════════════════════ */
-.enh-lightbox-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 3000;
-  background: rgba(2,4,8,0.96);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease;
-}
-.enh-lightbox-backdrop.is-open { opacity: 1; pointer-events: all; }
-.enh-lightbox-img {
-  max-width: 90vw;
-  max-height: 80vh;
-  border: 1px solid var(--border);
-  object-fit: contain;
-  transform: scale(0.95);
-  transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
-}
-.enh-lightbox-backdrop.is-open .enh-lightbox-img { transform: scale(1); }
-.enh-lightbox-close {
-  position: absolute;
-  top: 1.5rem; right: 1.5rem;
-  font-size: 1.4rem;
-  color: var(--text-dim);
-  background: none;
-  border: 1px solid var(--border);
-  padding: 0.3rem 0.7rem;
-  cursor: pointer;
-  transition: color 0.2s, border-color 0.2s;
-  line-height: 1;
-}
-.enh-lightbox-close:hover { color: var(--cyan); border-color: var(--cyan); }
-.enh-lightbox-label {
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.2em;
-  color: var(--text-dim);
-  text-transform: uppercase;
-}
-
-/* ══════════════════════════════════════════
-   ACHIEVEMENT CARD cursor style
-══════════════════════════════════════════ */
 .ach-card { cursor: pointer; }
 
-/* ── CTA LINES ── */
 .cta-line {
   color: var(--green) !important;
   transition: color 0.2s, text-shadow 0.2s;
@@ -2821,7 +2648,6 @@ footer {
   text-shadow: 0 0 12px rgba(0,255,136,0.5);
 }
 
-/* ── CARD HINT ── */
 .card-hint {
   font-family: var(--font-mono);
   font-size: 0.52rem;
@@ -2843,14 +2669,8 @@ footer {
 </style>
 
 <script>
-/* ══════════════════════════════════════════════════════════════════
-   ENHANCEMENT MODULE v2 — Modals, Overlays, Media, Gallery Nav
-══════════════════════════════════════════════════════════════════ */
 (function(){
 
-/* ─────────────────────────────────────────
-   MEDIA SPEC REGISTRY — with real image paths & YouTube URLs
-───────────────────────────────────────── */
 const MEDIA_SPEC = {
   AEGIS: {
     images: ['AGIS/Ageis 1.jpg','AGIS/Ageis 2.jpg','AGIS/Ageis 3.jpg','AGIS/Ageis 4.jpeg'],
@@ -2887,6 +2707,18 @@ const MEDIA_SPEC = {
   ZARVEX: {
     images: ['Zarvex/zar1.jpg','Zarvex/zar 2.jpg','Zarvex/zar 3.jpg','Zarvex/zar 4.png'],
     videoUrl: null
+  },
+  PHIMS: {
+    images: ['PHIMS/phims1.png','PHIMS/phims2.png','PHIMS/phims3.png'],
+    videoUrl: null
+  },
+  MODAS: {
+    images: ['MODAS/modas1.png','MODAS/modas2.png'],
+    videoUrl: null
+  },
+  AHCF: {
+    images: [],
+    videoUrl: null
   }
 };
 
@@ -2895,7 +2727,8 @@ const ACH_MEDIA_SPEC = {
   nokia:     { images: ['Nokia/Nokia 1.jpeg','Nokia/Nokia 2.jpeg'] },
   ukinnovate:{ images: ['UK INNOVATE/uk 1.jpeg','UK INNOVATE/uk 2.jpeg','UK INNOVATE/uk 3.jpeg'] },
   msme:      { images: [] },
-  sih:       { images: [] }
+  sih:       { images: [] },
+  ccl:       { images: ['CISCO/badge.png','CISCO/Certificate.jpg'] }
 };
 
 const PROJECT_DATA = {
@@ -2923,9 +2756,6 @@ const PROJECT_DATA = {
   }
 };
 
-/* ─────────────────────────────────────────
-   PATENT DATA REGISTRY
-───────────────────────────────────────── */
 const PATENT_DATA = {
   MORPH: {
     name: 'Modular Multi-Application Rover', status: 'Patent Filed · 2025', domain: 'Robotics',
@@ -2971,6 +2801,21 @@ const PATENT_DATA = {
     name: 'Adaptive Enclave-Guided Institutional Sentinel', status: 'Patent Filed · 2026', domain: 'Intelligent Surveillance Systems',
     problem: 'Conventional institutional attendance and identity verification systems rely on manual processes, static camera systems, or basic biometric devices, remaining vulnerable to proxy attendance, spoofing attempts, and privacy concerns.',
     solution: 'Adaptive edge-AI surveillance system integrating recognition-guided optical actuation and secure biometric processing for privacy-preserving attendance auditing.'
+  },
+  PHIMS: {
+    name: 'Predictive Hardware Intelligence & Monitoring System', status: 'Patent Filed · 2026', domain: 'AI Monitoring Systems',
+    problem: 'Traditional monitoring systems are reactive and rely on isolated parameters like voltage, temperature, or current, making them incapable of detecting early-stage degradation or predicting failures before they occur.',
+    solution: 'Multi-modal AI-based predictive monitoring system integrating electrical, thermal, vibration, and RC-based dynamic response sensing with hierarchical edge-cloud intelligence for early degradation detection and failure prediction.'
+  },
+  MODAS: {
+    name: 'Multi-View Optical Defect Analysis System', status: 'Patent Filed · 2026', domain: 'Optical Inspection',
+    problem: 'Existing inspection systems rely on single-view imaging or mechanical rotation, leading to incomplete defect detection, latency, and inability to detect internal defects in transparent materials.',
+    solution: 'Non-rotational multi-view optical inspection system with synchronized imaging and transmitted light analysis, enabling detection of both internal and external defects using AI-based adaptive learning.'
+  },
+  AHCF: {
+    name: 'Aqua Hybrid Communication Framework', status: 'Patent Filed · 2026', domain: 'Underwater Networks',
+    problem: 'Underwater communication systems rely on either acoustic or optical methods independently, leading to inefficiency, poor adaptability, and lack of intelligent coordination between sensing and communication.',
+    solution: 'Hybrid underwater communication framework integrating acoustic and optical channels with AI-driven adaptive switching, ISAC, and ultra-low-power wake-up mechanisms for intelligent underwater networks.'
   }
 };
 
@@ -2979,12 +2824,14 @@ const ACH_DATA = {
   iaic:      { rank: '02', badge: '// 2ND PRIZE', title: 'IAIC Recognition',             desc: 'Second prize at the India Artificial Intelligence Championship, recognizing applied AI and hardware innovation.' },
   msme:      { rank: '03', badge: '// SELECTED',  title: 'MSME Hackathon',               desc: 'Selected participant in MSME national hackathon, contributing systems engineering solutions for industry-level challenges.' },
   sih:       { rank: '04', badge: '// TOP 500',   title: 'Smart India Hackathon (SIH)',  desc: 'Selected among the Top 500 teams nationally for our problem statement. Served as team leader, guiding system design, development strategy, and project execution.' },
-  ukinnovate:{ rank: '05', badge: '// PRESENTER', title: 'UK Innovate Presenter',        desc: 'International presenter at UK Innovate — presenting advanced engineering research and patent systems to a global innovation audience.' }
+  ukinnovate:{ rank: '05', badge: '// PRESENTER', title: 'UK Innovate Presenter',        desc: 'International presenter at UK Innovate — presenting advanced engineering research and patent systems to a global innovation audience.' },
+  ccl:       { rank: '06', badge: '// TOP 6 · NATIONAL', title: 'India Top 6 — Cisco Champions League', desc: 'Ranked among the Top 6 teams nationally in the Cisco Champions League (CCL), competing in network innovation and intelligent systems design at a national scale.' }
 };
 
-/* ─────────────────────────────────────────
-   MEDIA HTML BUILDER
-───────────────────────────────────────── */
+var galleryItems = [];
+var galleryIndex = 0;
+var lightbox = document.getElementById('imgLightbox');
+
 function buildMediaHTML(images, videoUrls, isAmber) {
   var html = '';
   var accentClass = isAmber ? ' amber-style' : '';
@@ -3017,14 +2864,6 @@ function buildMediaHTML(images, videoUrls, isAmber) {
 
   return html || '<div class="enh-section-label" style="margin-top:1rem;opacity:0.5;">// NO MEDIA ATTACHED</div>';
 }
-
-/* ─────────────────────────────────────────
-   GALLERY LIGHTBOX STATE
-───────────────────────────────────────── */
-var galleryItems = [];  // {type:'img'|'video', src:'', label:''}
-var galleryIndex = 0;
-
-var lightbox = document.getElementById('imgLightbox');
 
 function buildLightboxHTML() {
   lightbox.innerHTML =
@@ -3071,8 +2910,7 @@ function renderLightboxItem() {
   } else {
     content.innerHTML = '<div class="enh-video-block-inner" style="padding:2rem;border:1px solid var(--border);background:rgba(2,4,8,0.9);min-width:320px;">' +
       '<div class="enh-video-play-icon" style="margin:0 auto;">&#9654;</div>' +
-      '<div class="enh-video-block-text" style="margin-top:0.8rem;">Video will be available when source is linked.</div>' +
-      '<div class="enh-video-block-sub">YouTube embed · Source to be added</div></div>';
+      '<div style="margin-top:0.8rem;font-family:var(--font-body);font-size:0.82rem;color:var(--text-dim);">Video available via embedded player above.</div></div>';
     label.textContent = item.label || 'Video Demo';
   }
 }
@@ -3088,9 +2926,6 @@ function closeLightbox() {
   document.body.style.overflow = '';
 }
 
-/* ─────────────────────────────────────────
-   ATTACH MEDIA CLICK HANDLERS
-───────────────────────────────────────── */
 function attachMediaHandlers(container) {
   var thumbs = container.querySelectorAll('.enh-media-thumb');
   var items = [];
@@ -3102,9 +2937,6 @@ function attachMediaHandlers(container) {
   });
 }
 
-/* ─────────────────────────────────────────
-   PATENT MODAL
-───────────────────────────────────────── */
 var patentBackdrop = document.getElementById('patentModal');
 var patentClose    = document.getElementById('patentModalClose');
 
@@ -3141,9 +2973,6 @@ document.querySelectorAll('.patent-card[data-patent]').forEach(function(card) {
 patentClose.addEventListener('click', closePatentModal);
 patentBackdrop.addEventListener('click', function(e) { if (e.target === patentBackdrop) closePatentModal(); });
 
-/* ─────────────────────────────────────────
-   ACHIEVEMENT MODAL
-───────────────────────────────────────── */
 var achBackdrop = document.getElementById('achModal');
 var achClose    = document.getElementById('achModalClose');
 
@@ -3181,9 +3010,6 @@ document.querySelectorAll('.ach-card[data-ach]').forEach(function(card) {
 achClose.addEventListener('click', closeAchModal);
 achBackdrop.addEventListener('click', function(e) { if (e.target === achBackdrop) closeAchModal(); });
 
-/* ─────────────────────────────────────────
-   OTHER PROJECTS MODAL
-───────────────────────────────────────── */
 var projBackdrop = document.getElementById('projModal');
 var projClose    = document.getElementById('projModalClose');
 
@@ -3218,9 +3044,7 @@ document.querySelectorAll('[data-project]').forEach(function(card) {
 projClose.addEventListener('click', closeProjModal);
 projBackdrop.addEventListener('click', function(e) { if (e.target === projBackdrop) closeProjModal(); });
 
-/* ─────────────────────────────────────────
-   PATENT CARD HOVER OVERLAYS
-───────────────────────────────────────── */
+/* PATENT CARD HOVER OVERLAYS */
 var OVERLAY_RENDERERS = {
   MORPH: drawOverlayMORPH,
   ZARVEX: drawOverlayZARVEX,
@@ -3230,7 +3054,10 @@ var OVERLAY_RENDERERS = {
   'SLPA-ZT': drawOverlaySLPA,
   SIMA: drawOverlaySIMA,
   AQUENTIS: drawOverlayAQUENTIS,
-  AEGIS: drawOverlayAEGIS
+  AEGIS: drawOverlayAEGIS,
+  PHIMS: drawOverlayPHIMS,
+  MODAS: drawOverlayMODAS,
+  AHCF: drawOverlayAHCF
 };
 
 document.querySelectorAll('.patent-card[data-patent]').forEach(function(card) {
@@ -3264,9 +3091,6 @@ document.querySelectorAll('.patent-card[data-patent]').forEach(function(card) {
   });
 });
 
-/* ─────────────────────────────────────────
-   OVERLAY RENDERERS
-───────────────────────────────────────── */
 function drawOverlayMORPH(ctx, w, h, t) {
   ctx.save();
   var modules = [{x:0.1,y:0.3,w:0.18,h:0.12},{x:0.32,y:0.3,w:0.18,h:0.12},{x:0.54,y:0.3,w:0.18,h:0.12},{x:0.76,y:0.3,w:0.18,h:0.12},{x:0.21,y:0.55,w:0.18,h:0.12},{x:0.43,y:0.55,w:0.18,h:0.12},{x:0.65,y:0.55,w:0.18,h:0.12}];
@@ -3347,10 +3171,85 @@ function drawOverlayAEGIS(ctx, w, h, t) {
   ctx.beginPath();ctx.arc(cx,cy,4,0,Math.PI*2);ctx.fillStyle='rgba(0,229,255,0.6)';ctx.fill();
   ctx.restore();
 }
+function drawOverlayPHIMS(ctx, w, h, t) {
+  ctx.save();
+  // Animated waveform / signal lines suggesting multi-modal monitoring
+  var channels = [0.25, 0.45, 0.65, 0.82];
+  var colors = ['rgba(0,229,255,', 'rgba(255,170,0,', 'rgba(0,255,136,', 'rgba(0,229,255,'];
+  channels.forEach(function(y, ci) {
+    ctx.beginPath();
+    for (var x = 0; x <= w; x += 3) {
+      var amp = (ci === 1 ? 0.04 : 0.025) * h;
+      var freq = 0.04 + ci * 0.01;
+      var py = y * h + Math.sin(x * freq + t * (1.2 + ci * 0.3)) * amp;
+      if (x === 0) ctx.moveTo(x, py); else ctx.lineTo(x, py);
+    }
+    ctx.strokeStyle = colors[ci] + '0.3)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    // Moving pulse dot
+    var dotX = ((t * 60 * (0.8 + ci * 0.15)) % w);
+    var dotAmp = (ci === 1 ? 0.04 : 0.025) * h;
+    var dotY = y * h + Math.sin(dotX * (0.04 + ci * 0.01) + t * (1.2 + ci * 0.3)) * dotAmp;
+    ctx.beginPath(); ctx.arc(dotX, dotY, 3, 0, Math.PI * 2);
+    ctx.fillStyle = colors[ci] + '0.7)'; ctx.fill();
+  });
+  ctx.restore();
+}
+function drawOverlayMODAS(ctx, w, h, t) {
+  ctx.save();
+  // Multi-view optical scan animation
+  var cx = w * 0.5, cy = h * 0.5;
+  var angles = [0, Math.PI * 0.5, Math.PI, Math.PI * 1.5];
+  angles.forEach(function(baseAngle, i) {
+    var angle = baseAngle + t * 0.4;
+    var r = Math.min(w, h) * 0.3;
+    var x = cx + Math.cos(angle) * r;
+    var y = cy + Math.sin(angle) * r;
+    // Camera icon dot
+    ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0,229,255,0.15)'; ctx.fill();
+    ctx.strokeStyle = 'rgba(0,229,255,0.4)'; ctx.lineWidth = 1; ctx.stroke();
+    // Line to center
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(cx, cy);
+    ctx.strokeStyle = 'rgba(0,229,255,0.1)'; ctx.lineWidth = 0.8; ctx.stroke();
+  });
+  // Center target
+  var pulse = (Math.sin(t * 2) + 1) / 2;
+  ctx.beginPath(); ctx.arc(cx, cy, 8 + pulse * 4, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(0,255,136,' + (0.15 + pulse * 0.2) + ')'; ctx.lineWidth = 1; ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(0,255,136,0.6)'; ctx.fill();
+  ctx.restore();
+}
+function drawOverlayAHCF(ctx, w, h, t) {
+  ctx.save();
+  // Acoustic waves (semicircles, bottom half) + optical beam (top)
+  var cx = w * 0.5, cy = h * 0.55;
+  // Acoustic concentric arcs
+  for (var r = 0; r < 4; r++) {
+    var phase = ((t * 0.5 + r * 0.3) % (Math.PI * 2));
+    var radius = (0.06 + (phase / (Math.PI * 2)) * 0.4) * Math.min(w, h);
+    var alpha = (1 - phase / (Math.PI * 2)) * 0.25;
+    ctx.beginPath(); ctx.arc(cx, cy, radius, Math.PI, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(0,229,255,' + alpha + ')'; ctx.lineWidth = 1.2; ctx.stroke();
+  }
+  // Optical beam upward
+  var beamAlpha = (Math.sin(t * 1.5) + 1) / 2 * 0.4;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(cx - w * 0.12, h * 0.05);
+  ctx.lineTo(cx + w * 0.12, h * 0.05);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(0,255,136,' + beamAlpha + ')';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0,255,136,' + (beamAlpha * 1.5) + ')'; ctx.lineWidth = 1; ctx.stroke();
+  // Center node
+  ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(0,229,255,0.6)'; ctx.fill();
+  ctx.restore();
+}
 
-/* ─────────────────────────────────────────
-   KEYBOARD ESC
-───────────────────────────────────────── */
 document.addEventListener('keydown', function(e) {
   if (e.key !== 'Escape') return;
   if (lightbox.classList.contains('is-open'))            closeLightbox();
@@ -3359,19 +3258,15 @@ document.addEventListener('keydown', function(e) {
   else if (projBackdrop.classList.contains('is-open'))   closeProjModal();
 });
 
-/* ─────────────────────────────────────────
-   KEYBOARD ARROW NAV IN LIGHTBOX
-───────────────────────────────────────── */
 document.addEventListener('keydown', function(e) {
   if (!lightbox.classList.contains('is-open')) return;
   if (e.key === 'ArrowRight') navigateGallery(1);
   if (e.key === 'ArrowLeft')  navigateGallery(-1);
 });
 
-})(); // end enhancement module
+})();
 </script>
 
-<!-- FOOTER -->
 <footer>
   <div class="footer-brand">Ritam Pandey · Research Lab</div>
   <div class="footer-copy">© 2025–2026 · All Patents Filed</div>
@@ -3381,7 +3276,6 @@ document.addEventListener('keydown', function(e) {
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-  // ——— CURSOR ———
   const cursor = document.getElementById('cursor');
   const ring   = document.getElementById('cursorRing');
   if (cursor && ring) {
@@ -3401,7 +3295,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // ——— PROGRESS BAR ———
   const bar = document.getElementById('progressBar');
   if (bar) {
     window.addEventListener('scroll', () => {
@@ -3410,7 +3303,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // ——— COUNTER ANIMATION ———
   function animCounter(el, target, duration) {
     if (!el) return;
     duration = duration || 1600;
@@ -3422,9 +3314,8 @@ document.addEventListener('DOMContentLoaded', function() {
       if (start >= target) clearInterval(timer);
     }, 16);
   }
-  setTimeout(function(){ animCounter(document.getElementById('patentCounter'), 9); }, 1200);
+  setTimeout(function(){ animCounter(document.getElementById('patentCounter'), 12); }, 1200);
 
-  // ——— BACKGROUND CANVAS — PCB TRACES ———
   const bgCanvas = document.getElementById('bgCanvas');
   if (bgCanvas) {
     const bgCtx = bgCanvas.getContext('2d');
@@ -3469,7 +3360,6 @@ document.addEventListener('DOMContentLoaded', function() {
     drawBg();
   }
 
-  // ——— MESH CANVAS ———
   const mesh = document.getElementById('meshCanvas');
   if (mesh) {
     const mCtx = mesh.getContext('2d');
@@ -3542,7 +3432,6 @@ document.addEventListener('DOMContentLoaded', function() {
     drawMesh();
   }
 
-  // ——— CIRCUIT CANVAS ———
   const cc = document.getElementById('circuitCanvas');
   if (cc) {
     const cCtx = cc.getContext('2d');
@@ -3595,10 +3484,8 @@ document.addEventListener('DOMContentLoaded', function() {
     drawCircuit();
   }
 
-  // ——— SCROLL REVEAL ———
   const reveals = document.querySelectorAll('.reveal');
   if (reveals.length) {
-    // Force-show fallback: if IO hasn't triggered within 3s, make everything visible
     const revealFallback = setTimeout(function() {
       reveals.forEach(function(r) { r.classList.add('visible'); });
     }, 3000);
@@ -3614,7 +3501,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     reveals.forEach(function(r) { observer.observe(r); });
 
-    // Clear fallback once first element triggers (IO is working)
     const clearFallback = new IntersectionObserver(function(entries) {
       entries.forEach(function(e) {
         if (e.isIntersecting) { clearTimeout(revealFallback); clearFallback.disconnect(); }
@@ -3623,9 +3509,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (reveals[0]) clearFallback.observe(reveals[0]);
   }
 
-}); // end DOMContentLoaded
+});
 
-/* ── HAMBURGER MENU ── */
 document.addEventListener('DOMContentLoaded', function() {
   var hamburger   = document.getElementById('nav-hamburger');
   var mobileMenu  = document.getElementById('mobile-menu');
@@ -3662,12 +3547,10 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-/* ── EFFECTS TOGGLE ── */
 document.addEventListener('DOMContentLoaded', function() {
   var toggleBtn = document.getElementById('toggle-effects');
   var effectsOn = true;
 
-  /* Disable custom cursor on touch devices from the start */
   if (window.matchMedia('(hover: none)').matches) {
     document.body.classList.add('effects-disabled');
     effectsOn = false;
